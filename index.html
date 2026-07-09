@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们的小世界 💕</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 顶部滚动进度条 -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- 首屏：照片墙背景 -->
+    <section class="hero">
+        <div class="photo-wall" id="photoWall"></div>
+
+        <div class="hero-overlay">
+            <h1>我们的小世界</h1>
+            <p class="subtitle">每一张照片，都是心动的证据</p>
+
+            <div class="counter" id="counter">
+                <div><span id="years">0</span><small>年</small></div>
+                <div><span id="months">0</span><small>个月</small></div>
+                <div><span id="days">0</span><small>天</small></div>
+                <div><span id="hours">0</span><small>时</small></div>
+                <div><span id="minutes">0</span><small>分</small></div>
+                <div><span id="seconds">0</span><small>秒</small></div>
+            </div>
+            <p class="start-date">从 <span id="startDateText"></span> 开始，一直在一起</p>
+        </div>
+
+        <div class="scroll-hint">
+            <span>向下滑动，看看我们的故事</span>
+            <div class="arrow">↓</div>
+        </div>
+    </section>
+
+    <!-- 双面情书 -->
+    <section class="love-letter-section" id="loveLetterSection">
+        <div class="love-letter-scene">
+            <div class="love-letter-card" id="loveLetterCard">
+                <div class="love-letter-face love-letter-front">
+                    <span class="letter-tag">我写给 TA</span>
+                    <h2 id="loveLetterTitleFront"></h2>
+                    <div class="typewriter" id="loveLetterContentFront"></div>
+                    <div class="letter-actions">
+                        <button class="replay-btn" id="replayFront" aria-label="重新播放">
+                            <span>↻</span> 再听一遍
+                        </button>
+                        <button class="flip-btn" id="flipToBack" aria-label="翻到背面">
+                            看看 TA 写给我的 <span>→</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="love-letter-face love-letter-back">
+                    <span class="letter-tag">TA 写给我</span>
+                    <h2 id="loveLetterTitleBack"></h2>
+                    <div class="typewriter" id="loveLetterContentBack"></div>
+                    <div class="letter-actions">
+                        <button class="replay-btn" id="replayBack" aria-label="重新播放">
+                            <span>↻</span> 再听一遍
+                        </button>
+                        <button class="flip-btn" id="flipToFront" aria-label="翻回正面">
+                            <span>←</span> 看看我写给 TA 的
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 回忆画廊 -->
+    <section class="gallery-section">
+        <h2>📸 我们的回忆碎片</h2>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </section>
+
+    <!-- 时间轴 -->
+    <main class="timeline-section">
+        <h2>🌟 我们的恋爱时光轴</h2>
+        <ul class="timeline" id="timeline"></ul>
+    </main>
+
+    <footer>
+        <p>Made with ❤️ for you</p>
+    </footer>
+
+    <!-- 图片灯箱 -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose" aria-label="关闭">×</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="上一张">‹</button>
+        <img src="" alt="回忆" id="lightboxImg">
+        <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="下一张">›</button>
+    </div>
+
+    <!-- 背景音乐播放器 -->
+    <button class="music-player" id="musicPlayer" aria-label="播放背景音乐">
+        <span class="music-icon">🎵</span>
+        <span class="music-waves"><i></i><i></i><i></i></span>
+    </button>
+    <audio id="bgMusic" loop></audio>
+
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
