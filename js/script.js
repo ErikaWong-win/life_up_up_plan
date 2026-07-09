@@ -38,6 +38,56 @@
         }
     }
 
+    // ==================== 全屏流星 ====================
+    function initMeteors() {
+        const container = document.getElementById("meteors");
+        if (!container) return;
+
+        const isMobile = window.matchMedia("(max-width: 720px)").matches;
+        const spawnInterval = isMobile ? 2800 : 2200; // 手机端稍微稀疏一点
+        const maxMeteors = isMobile ? 4 : 6;
+
+        function createMeteor() {
+            if (container.childElementCount >= maxMeteors) return;
+
+            const meteor = document.createElement("span");
+            meteor.className = "meteor";
+
+            // 流星长度：80px ~ 220px
+            const width = Math.floor(Math.random() * 140) + 80;
+            meteor.style.width = `${width}px`;
+
+            // 起始位置：主要在屏幕上方和左方区域
+            const startX = Math.random() * 100; // 0% ~ 100% 左上角横向
+            const startY = Math.random() * 60;  // 0% ~ 60% 左上角纵向
+            meteor.style.left = `${startX}%`;
+            meteor.style.top = `${startY}%`;
+
+            // 动画时长 0.8s ~ 2s
+            const duration = (Math.random() * 1.2 + 0.8).toFixed(2);
+            meteor.style.animationDuration = `${duration}s`;
+
+            // 随机延迟 0 ~ 0.3s
+            meteor.style.animationDelay = `${(Math.random() * 0.3).toFixed(2)}s`;
+
+            // 随机透明度微调
+            meteor.style.opacity = Math.random() * 0.3 + 0.7;
+
+            container.appendChild(meteor);
+
+            // 动画结束后移除
+            setTimeout(() => {
+                if (meteor.parentNode === container) {
+                    container.removeChild(meteor);
+                }
+            }, parseFloat(duration) * 1000 + 400);
+        }
+
+        // 初始先产生一颗
+        setTimeout(createMeteor, 800);
+        setInterval(createMeteor, spawnInterval);
+    }
+
     // 鼠标视差：让粒子轻微跟随鼠标
     function initParallax() {
         const particles = document.getElementById("particles");
@@ -438,6 +488,7 @@
 
     // ==================== 初始化 ====================
     createDreamBackground();
+    initMeteors();
     renderWall();
     renderGallery();
     renderTimeline();
