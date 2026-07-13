@@ -252,26 +252,78 @@
 
     // ==================== 照片墙 ====================
     function renderWall() {
-        const WALL_CELLS = 36;
         const photos = Array.isArray(CONFIG.photos) ? CONFIG.photos : [];
         const totalPhotos = photos.length;
-        let html = "";
 
+        // 根据屏幕尺寸计算所需格子数：每个格子约 200px，覆盖约 1.5 倍视口即可
+        // 避免固定 36 个导致首屏一次性加载过多大图
+        const cellSize = window.innerWidth <= 720 ? 90 : 200;
+        const cols = Math.max(3, Math.ceil(window.innerWidth / cellSize));
+        const rows = Math.max(3, Math.ceil(window.innerHeight / cellSize * 1.5));
+        const WALL_CELLS = Math.min(24, cols * rows);
+
+        photoWall.innerHTML = "";
+
+        // 先创建空占位格子，减轻首帧 DOM 压力
+        const cells = [];
         for (let i = 0; i < WALL_CELLS; i++) {
             const photo = totalPhotos > 0 ? photos[i % totalPhotos] : null;
             const delay = (i * 0.05).toFixed(2);
-            if (photo && photo.src) {
-                html += `
-                    <div class="wall-cell flip-in" style="animation-delay: ${delay}s">
-                        <img src="${photo.src}" alt="回忆" loading="${i < 12 ? "eager" : "lazy"}">
-                    </div>
-                `;
-            } else {
-                html += `<div class="wall-cell placeholder flip-in" style="animation-delay: ${delay}s"><span>💕</span></div>`;
+            const cell = document.createElement("div");
+            cell.className = "wall-cell flip-in";
+            cell.style.animationDelay = `${delay}s`;
+
+            if (!photo || !photo.src) {
+                cell.classList.add("placeholder");
+                cell.innerHTML = "<span>💕</span>";
             }
+
+            photoWall.appendChild(cell);
+            cells.push({ cell, photo, index: i });
         }
 
-        photoWall.innerHTML = html;
+        // 没有照片时直接结束
+        if (totalPhotos === 0) return;
+
+        // 优先使用缩略图，没有缩略图才用原图
+        function pickSrc(photo) {
+            return photo.thumb || photo.src;
+        }
+
+        // 为每个格子加载图片；首屏直接加载，首屏外用 IntersectionObserver 延迟加载
+        const eagerCount = Math.min(WALL_CELLS, Math.ceil(cols * rows * 0.6));
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const { cell, photo } = entry.target._wallData;
+                if (cell.querySelector("img")) return;
+
+                const img = document.createElement("img");
+                img.src = pickSrc(photo);
+                img.alt = "回忆";
+                img.decoding = "async";
+                img.loading = "lazy";
+                cell.appendChild(img);
+                observer.unobserve(cell);
+            });
+        }, { rootMargin: "200px 0px 200px 0px", threshold: 0 });
+
+        cells.forEach(({ cell, photo, index }) => {
+            if (!photo || !photo.src) return;
+
+            cell._wallData = { cell, photo };
+
+            if (index < eagerCount) {
+                const img = document.createElement("img");
+                img.src = pickSrc(photo);
+                img.alt = "回忆";
+                img.decoding = "async";
+                img.loading = index < 6 ? "eager" : "lazy";
+                cell.appendChild(img);
+            } else {
+                observer.observe(cell);
+            }
+        });
     }
 
     // ==================== 倒计时 ====================
