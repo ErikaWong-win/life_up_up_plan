@@ -10,8 +10,11 @@
     <!-- 顶部滚动进度条 -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
-    <!-- 全屏流星层 -->
-    <div class="meteors" id="meteors"></div>
+    <!-- 全屏星空与流星雨画布 -->
+    <canvas class="starfield" id="starfield"></canvas>
+
+    <!-- 主题氛围过渡层：随恋爱时光轴主题切换而渐变 -->
+    <div class="theme-transition-layer" id="themeTransitionLayer"></div>
 
     <!-- 首屏：照片墙背景 -->
     <section class="hero">
@@ -35,6 +38,42 @@
         <div class="scroll-hint">
             <span>向下滑动，看看我们的故事</span>
             <div class="arrow">↓</div>
+        </div>
+    </section>
+
+    <!-- 恋爱数据统计 -->
+    <section class="stats-section" id="statsSection">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number" data-target="days" data-value="0">0</span>
+                <span class="stat-label">相伴天数</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" data-target="photos" data-value="0">0</span>
+                <span class="stat-label">照片总数</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" data-target="memories" data-value="0">0</span>
+                <span class="stat-label">回忆片段</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" data-target="heartbeat" data-value="0">0</span>
+                <span class="stat-label">心动瞬间</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 纪念日倒计时 -->
+    <section class="anniversary-section" id="anniversarySection">
+        <div class="anniversary-card">
+            <span class="anniversary-label" id="anniversaryLabel">距离我们的下一个纪念日</span>
+            <div class="anniversary-countdown" id="anniversaryCountdown">
+                <div><span id="annDays">0</span><small>天</small></div>
+                <div><span id="annHours">00</span><small>时</small></div>
+                <div><span id="annMinutes">00</span><small>分</small></div>
+                <div><span id="annSeconds">00</span><small>秒</small></div>
+            </div>
+            <p class="anniversary-date" id="anniversaryDate"></p>
         </div>
     </section>
 
@@ -72,17 +111,103 @@
         </div>
     </section>
 
+    <div class="section-divider"><span>✨</span></div>
+
     <!-- 回忆画廊 -->
     <section class="gallery-section">
         <h2>📸 我们的回忆碎片</h2>
         <div class="gallery-grid" id="galleryGrid"></div>
     </section>
 
+    <div class="section-divider"><span>💫</span></div>
+
     <!-- 时间轴 -->
     <main class="timeline-section">
         <h2>🌟 我们的恋爱时光轴</h2>
-        <ul class="timeline" id="timeline"></ul>
+        <div class="timeline-wrap" id="timeline"></div>
     </main>
+
+    <div class="section-divider"><span>🎂</span></div>
+
+    <!-- 她对我的意义 -->
+    <section class="meaning-section" id="meaningSection">
+        <h2>💌 你对我来说</h2>
+        <div class="meaning-grid" id="meaningGrid"></div>
+    </section>
+
+    <!-- 生日过渡页 -->
+    <section class="birthday-transition" id="birthdayTransition">
+        <div class="transition-content">
+            <p>好了，回忆翻完了</p>
+            <h2>现在轮到今天的主角了</h2>
+            <div class="arrow-hint">↓</div>
+        </div>
+    </section>
+
+    <!-- 生日专属页 -->
+    <section class="birthday-section" id="birthdaySection">
+        <div class="birthday-content">
+            <p class="birthday-pretitle" id="birthdayPretitle">给最特别的你</p>
+            <h2 class="birthday-title" id="birthdayTitle">生日快乐</h2>
+            <p class="birthday-subtitle" id="birthdaySubtitle">点击蜡烛，一起许愿吧</p>
+
+            <div class="cake-container" id="cakeContainer">
+                <svg class="cake" viewBox="0 0 320 260" aria-label="生日蛋糕">
+                    <!-- 蛋糕托盘 -->
+                    <ellipse cx="160" cy="245" rx="130" ry="22" fill="#e8d5c4" opacity="0.6"/>
+                    <!-- 蛋糕底层 -->
+                    <path d="M60 180 Q60 230 160 230 Q260 230 260 180 L260 130 Q260 180 160 180 Q60 180 60 130 Z" fill="#f4c2c2"/>
+                    <path d="M60 130 Q60 180 160 180 Q260 180 260 130 Q260 160 160 160 Q60 160 60 130" fill="#e8a8a8"/>
+                    <!-- 蛋糕上层 -->
+                    <path d="M85 130 Q85 165 160 165 Q235 165 235 130 L235 90 Q235 125 160 125 Q85 125 85 90 Z" fill="#ffe4e1"/>
+                    <path d="M85 90 Q85 125 160 125 Q235 125 235 90 Q235 115 160 115 Q85 115 85 90" fill="#f0c0c0"/>
+                    <!-- 顶层糖霜 -->
+                    <ellipse cx="160" cy="90" rx="75" ry="18" fill="#fff5f5"/>
+                    <!-- 蜡烛 1 -->
+                    <g class="candle" data-index="0" transform="translate(120, 55)">
+                        <rect x="-6" y="0" width="12" height="35" rx="2" fill="#a18cd1"/>
+                        <rect x="-6" y="0" width="12" height="8" rx="2" fill="#c4b5e0"/>
+                        <path class="flame" d="M0 -4 Q-6 -18 0 -32 Q6 -18 0 -4" fill="#ffcc4d"/>
+                        <circle class="flame-core" cx="0" cy="-18" r="5" fill="#ff9f43"/>
+                    </g>
+                    <!-- 蜡烛 2 -->
+                    <g class="candle" data-index="1" transform="translate(160, 45)">
+                        <rect x="-6" y="0" width="12" height="35" rx="2" fill="#8fd3f4"/>
+                        <rect x="-6" y="0" width="12" height="8" rx="2" fill="#b8e3f5"/>
+                        <path class="flame" d="M0 -4 Q-6 -18 0 -32 Q6 -18 0 -4" fill="#ffcc4d"/>
+                        <circle class="flame-core" cx="0" cy="-18" r="5" fill="#ff9f43"/>
+                    </g>
+                    <!-- 蜡烛 3 -->
+                    <g class="candle" data-index="2" transform="translate(200, 55)">
+                        <rect x="-6" y="0" width="12" height="35" rx="2" fill="#fbc2eb"/>
+                        <rect x="-6" y="0" width="12" height="8" rx="2" fill="#ffd6f0"/>
+                        <path class="flame" d="M0 -4 Q-6 -18 0 -32 Q6 -18 0 -4" fill="#ffcc4d"/>
+                        <circle class="flame-core" cx="0" cy="-18" r="5" fill="#ff9f43"/>
+                    </g>
+                    <!-- 装饰草莓 -->
+                    <circle cx="110" cy="95" r="8" fill="#e74c3c"/>
+                    <circle cx="210" cy="95" r="8" fill="#e74c3c"/>
+                    <circle cx="160" cy="105" r="8" fill="#e74c3c"/>
+                </svg>
+                <p class="cake-hint" id="cakeHint">✨ 点一下蜡烛</p>
+            </div>
+
+            <div class="birthday-message" id="birthdayMessage">
+                <h3>给你的话</h3>
+                <div class="typewriter" id="birthdayTypewriter"></div>
+            </div>
+        </div>
+
+        <!-- 烟花画布 -->
+        <canvas class="fireworks" id="fireworks"></canvas>
+    </section>
+
+    <!-- 未来约定 -->
+    <section class="future-section" id="futureSection">
+        <h2>🌟 我们的未来约定</h2>
+        <div class="future-grid" id="futureGrid"></div>
+        <div class="next-milestone" id="nextMilestone"></div>
+    </section>
 
     <footer>
         <p>Made with ❤️ for you</p>

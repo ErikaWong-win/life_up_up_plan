@@ -21,6 +21,18 @@
     --shadow: 0 20px 60px rgba(139, 92, 246, 0.18);
     --shadow-soft: 0 12px 40px rgba(224, 108, 159, 0.15);
     --radius: 2rem;
+
+    /* 时光轴主题色 */
+    --theme-campus: #5b7cfa;
+    --theme-campus-glow: rgba(91, 124, 250, 0.45);
+    --theme-island: #3ec2d1;
+    --theme-island-glow: rgba(62, 194, 209, 0.45);
+    --theme-disney: #e66ef7;
+    --theme-disney-glow: rgba(230, 110, 247, 0.45);
+    --theme-sakura: #ff9ec8;
+    --theme-sakura-glow: rgba(255, 158, 200, 0.45);
+    --theme-tianzifang: #ff9f5a;
+    --theme-tianzifang-glow: rgba(255, 159, 90, 0.45);
 }
 
 html {
@@ -29,96 +41,72 @@ html {
 
 body {
     font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg);
+    background: transparent;
     color: var(--text);
     overflow-x: hidden;
     line-height: 1.75;
 }
 
-/* ==================== 全屏梦幻背景 ==================== */
-.dream-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background:
-        radial-gradient(circle at 15% 25%, rgba(161, 140, 209, 0.25) 0%, transparent 45%),
-        radial-gradient(circle at 85% 30%, rgba(251, 194, 235, 0.3) 0%, transparent 45%),
-        radial-gradient(circle at 50% 80%, rgba(143, 211, 244, 0.25) 0%, transparent 50%),
-        linear-gradient(135deg, #fdf6ff 0%, #fff0f8 50%, #f0f8ff 100%);
-    animation: dreamFlow 20s ease-in-out infinite alternate;
-}
-
-@keyframes dreamFlow {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(12deg); }
-}
-
-/* 漂浮粒子 */
-.particles {
+/* ==================== 全屏星空与流星雨画布 ==================== */
+.starfield {
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 
-/* ==================== 全屏流星层 ==================== */
-.meteors {
+/* ==================== 主题氛围过渡层 ==================== */
+.theme-transition-layer {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: -1;
     pointer-events: none;
-    overflow: hidden;
-}
-
-.meteor {
-    position: absolute;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4) 40%, transparent 100%);
-    border-radius: 100%;
-    box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.7), 0 0 14px rgba(143, 211, 244, 0.5);
-    transform: rotate(-45deg);
     opacity: 0;
-    animation: meteorFall linear forwards;
+    transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+                background 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    background: radial-gradient(ellipse at 50% 100%, var(--theme-glow), transparent 65%);
 }
 
-@keyframes meteorFall {
-    0% {
-        opacity: 0;
-        transform: translateX(0) translateY(0) rotate(-45deg) scaleX(0.6);
-    }
-    8% {
-        opacity: 1;
-    }
-    85% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        transform: translateX(42vw) translateY(42vw) rotate(-45deg) scaleX(1);
-    }
+body[data-active-theme="campus"] .theme-transition-layer {
+    opacity: 0.55;
+    background:
+        radial-gradient(ellipse at 20% 100%, rgba(91, 124, 250, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 90%, rgba(255, 216, 155, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 120%, rgba(161, 140, 209, 0.12) 0%, transparent 60%);
 }
 
-.particle {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 12px rgba(251, 194, 235, 0.8);
-    animation: floatUp linear infinite;
-    opacity: 0;
+body[data-active-theme="island"] .theme-transition-layer {
+    opacity: 0.6;
+    background:
+        radial-gradient(ellipse at 50% 100%, rgba(62, 194, 209, 0.38) 0%, transparent 58%),
+        radial-gradient(ellipse at 20% 85%, rgba(143, 211, 244, 0.18) 0%, transparent 48%),
+        radial-gradient(ellipse at 80% 95%, rgba(255, 250, 230, 0.1) 0%, transparent 50%);
 }
 
-@keyframes floatUp {
-    0% {
-        transform: translateY(110vh) scale(0.4) rotate(0deg);
-        opacity: 0;
-    }
-    10% { opacity: 0.85; }
-    90% { opacity: 0.6; }
-    100% {
-        transform: translateY(-10vh) scale(1.1) rotate(360deg);
-        opacity: 0;
-    }
+body[data-active-theme="disney"] .theme-transition-layer {
+    opacity: 0.65;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(230, 110, 247, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 25% 20%, rgba(123, 44, 191, 0.2) 0%, transparent 45%),
+        radial-gradient(ellipse at 75% 25%, rgba(255, 204, 77, 0.16) 0%, transparent 42%);
+}
+
+body[data-active-theme="sakura"] .theme-transition-layer {
+    opacity: 0.55;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(255, 158, 200, 0.32) 0%, transparent 55%),
+        radial-gradient(ellipse at 30% 15%, rgba(255, 230, 240, 0.15) 0%, transparent 45%),
+        radial-gradient(ellipse at 70% 20%, rgba(200, 230, 201, 0.12) 0%, transparent 48%);
+}
+
+body[data-active-theme="tianzifang"] .theme-transition-layer {
+    opacity: 0.6;
+    background:
+        radial-gradient(ellipse at 80% 100%, rgba(255, 159, 90, 0.4) 0%, transparent 55%),
+        radial-gradient(ellipse at 30% 95%, rgba(196, 69, 54, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 110%, rgba(93, 64, 55, 0.12) 0%, transparent 55%);
 }
 
 /* ==================== 首屏照片墙 ==================== */
@@ -138,7 +126,7 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-auto-rows: minmax(200px, 1fr);
     gap: 6px;
-    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    background: transparent;
     z-index: 0;
     perspective: 1400px;
     perspective-origin: center center;
@@ -150,9 +138,9 @@ body {
     inset: 0;
     background: linear-gradient(
         180deg,
-        rgba(250, 246, 255, 0) 0%,
-        rgba(250, 246, 255, 0.2) 50%,
-        rgba(250, 246, 255, 0.55) 100%
+        rgba(5, 10, 18, 0) 0%,
+        rgba(5, 10, 18, 0.25) 60%,
+        rgba(5, 10, 18, 0.55) 100%
     );
     pointer-events: none;
 }
@@ -160,7 +148,7 @@ body {
 .wall-cell {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #e0c3fc 0%, #fbc2eb 100%);
+    background: rgba(255, 255, 255, 0.04);
     transform-style: preserve-3d;
     backface-visibility: hidden;
     transition: transform 0.4s ease, box-shadow 0.4s ease;
@@ -185,9 +173,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #e0c3fc 0%, #fbc2eb 50%, #8ec5fc 100%);
+    background: rgba(255, 255, 255, 0.05);
     font-size: 2.4rem;
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 0.65);
 }
 
 /* 照片墙逐片翻转打开 */
@@ -395,13 +383,156 @@ body {
     background: linear-gradient(90deg, var(--dream-start), var(--dream-end));
 }
 
+/* 主题章节分隔页 */
+.timeline-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.theme-chapter {
+    position: relative;
+    text-align: center;
+    padding: 4rem 1.5rem;
+    margin: 0 auto;
+    max-width: 720px;
+    width: 100%;
+    border-radius: 2rem;
+    overflow: hidden;
+    --theme-color: var(--theme-campus);
+    --theme-glow: var(--theme-campus-glow);
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s ease;
+}
+
+.theme-chapter.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.theme-chapter.switching {
+    animation: chapterPulseStrong 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes chapterPulseStrong {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); box-shadow: 0 0 60px var(--theme-glow); }
+    100% { transform: scale(1); }
+}
+
+.theme-chapter[data-theme="campus"] { --theme-color: var(--theme-campus); --theme-glow: var(--theme-campus-glow); }
+.theme-chapter[data-theme="island"] { --theme-color: var(--theme-island); --theme-glow: var(--theme-island-glow); }
+.theme-chapter[data-theme="disney"] { --theme-color: var(--theme-disney); --theme-glow: var(--theme-disney-glow); }
+.theme-chapter[data-theme="sakura"] { --theme-color: var(--theme-sakura); --theme-glow: var(--theme-sakura-glow); }
+.theme-chapter[data-theme="tianzifang"] { --theme-color: var(--theme-tianzifang); --theme-glow: var(--theme-tianzifang-glow); }
+
+.theme-chapter .chapter-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, var(--theme-glow), transparent 65%);
+    opacity: 0.75;
+    pointer-events: none;
+    animation: chapterPulse 6s ease-in-out infinite;
+}
+
+@keyframes chapterPulse {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+.theme-chapter .chapter-content {
+    position: relative;
+    z-index: 1;
+}
+
+.theme-chapter .chapter-icon {
+    font-size: 3.2rem;
+    line-height: 1;
+    margin-bottom: 0.8rem;
+    filter: drop-shadow(0 8px 16px var(--theme-glow));
+}
+
+.theme-chapter h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+    margin-bottom: 0.4rem;
+}
+
+.theme-chapter p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.78);
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* 主题装饰元素 */
+.theme-chapter::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 40px;
+    opacity: 0.18;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: contain;
+}
+
+.theme-chapter[data-theme="campus"]::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M10 40 L20 15 L30 40 M90 40 L100 10 L110 40 M0 40 L120 40' stroke='%235b7cfa' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+}
+.theme-chapter[data-theme="island"]::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M0 30 Q30 15 60 30 T120 30' stroke='%233ec2d1' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+}
+.theme-chapter[data-theme="disney"]::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M20 40 L30 20 L40 40 M80 40 L90 15 L100 40' stroke='%23e66ef7' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+}
+.theme-chapter[data-theme="sakura"]::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M20 40 Q35 10 50 40 M70 40 Q85 5 100 40' stroke='%23ff9ec8' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+}
+.theme-chapter[data-theme="tianzifang"]::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M10 40 L10 20 L30 20 L30 40 M90 40 L90 15 L110 15 L110 40' stroke='%23ff9f5a' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+}
+
+/* 主题徽章 */
+.theme-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-color), rgba(255, 255, 255, 0.22));
+    padding: 0.28rem 0.75rem;
+    border-radius: 2rem;
+    margin-bottom: 0.6rem;
+    box-shadow: 0 4px 14px var(--theme-glow);
+    letter-spacing: 0.02em;
+}
+
 .timeline {
     list-style: none;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    --theme-color: var(--theme-campus);
+    --theme-glow: var(--theme-campus-glow);
+    transition: --theme-color 0.9s ease, --theme-glow 0.9s ease;
 }
+
+.timeline[data-theme="campus"] { --theme-color: var(--theme-campus); --theme-glow: var(--theme-campus-glow); }
+.timeline[data-theme="island"] { --theme-color: var(--theme-island); --theme-glow: var(--theme-island-glow); }
+.timeline[data-theme="disney"] { --theme-color: var(--theme-disney); --theme-glow: var(--theme-disney-glow); }
+.timeline[data-theme="sakura"] { --theme-color: var(--theme-sakura); --theme-glow: var(--theme-sakura-glow); }
+.timeline[data-theme="tianzifang"] { --theme-color: var(--theme-tianzifang); --theme-glow: var(--theme-tianzifang-glow); }
 
 .timeline::before {
     content: "";
@@ -410,13 +541,15 @@ body {
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, var(--dream-start), var(--dream-mid), var(--dream-end));
+    background: linear-gradient(180deg, var(--theme-color), rgba(255, 255, 255, 0.45), var(--theme-color));
     transform: translateX(-50%);
     border-radius: 3px;
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+    box-shadow: 0 0 24px var(--theme-glow);
 }
 
 .timeline-item {
+    --theme-color: var(--theme-campus);
+    --theme-glow: var(--theme-campus-glow);
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -435,13 +568,19 @@ body {
                 box-shadow 0.4s ease;
 }
 
+.timeline-item[data-theme="campus"] { --theme-color: var(--theme-campus); --theme-glow: var(--theme-campus-glow); }
+.timeline-item[data-theme="island"] { --theme-color: var(--theme-island); --theme-glow: var(--theme-island-glow); }
+.timeline-item[data-theme="disney"] { --theme-color: var(--theme-disney); --theme-glow: var(--theme-disney-glow); }
+.timeline-item[data-theme="sakura"] { --theme-color: var(--theme-sakura); --theme-glow: var(--theme-sakura-glow); }
+.timeline-item[data-theme="tianzifang"] { --theme-color: var(--theme-tianzifang); --theme-glow: var(--theme-tianzifang-glow); }
+
 .timeline-item.visible {
     opacity: 1;
     transform: translateY(0);
 }
 
 .timeline-item:hover {
-    box-shadow: var(--shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    box-shadow: 0 20px 50px var(--theme-glow), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
 .timeline-item::before {
@@ -451,10 +590,10 @@ body {
     top: 50%;
     width: 16px;
     height: 16px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: radial-gradient(circle, #fff 0%, var(--theme-color) 70%);
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.5), 0 0 20px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.5), 0 0 24px var(--theme-color);
     z-index: 2;
 }
 
@@ -471,8 +610,8 @@ body {
     overflow: hidden;
     border-radius: 1.2rem;
     min-height: 240px;
-    background: linear-gradient(135deg, #e0c3fc 0%, #fbc2eb 100%);
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.12);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    box-shadow: 0 8px 24px var(--theme-glow);
     position: relative;
 }
 
@@ -496,7 +635,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #e0c3fc 0%, #fbc2eb 100%);
+    background: linear-gradient(135deg, var(--theme-color), rgba(255, 255, 255, 0.22));
     background-size: 200% 200%;
     animation: shimmer 5s ease infinite;
     color: #fff;
@@ -512,12 +651,18 @@ body {
     font-size: 0.85rem;
     color: #fff;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--theme-color), rgba(255, 255, 255, 0.25));
     padding: 0.35rem 0.9rem;
     border-radius: 2rem;
     margin-bottom: 0.8rem;
-    box-shadow: 0 4px 12px rgba(224, 108, 159, 0.25);
+    box-shadow: 0 4px 12px var(--theme-glow);
     letter-spacing: 0.03em;
+    margin-left: 0.5rem;
+}
+
+.timeline-item:nth-child(even) .timeline-text .date {
+    margin-left: 0;
+    margin-right: 0.5rem;
 }
 
 .timeline-text h3 {
@@ -1007,6 +1152,598 @@ footer p {
     }
 }
 
+/* ==================== 恋爱数据统计 ==================== */
+.stats-section {
+    padding: 5rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border-radius: 1.6rem;
+    padding: 2rem 1rem;
+    text-align: center;
+    box-shadow: var(--shadow-soft), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* ==================== 纪念日倒计时 ==================== */
+.anniversary-section {
+    padding: 2rem 1.5rem 5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.anniversary-card {
+    width: 100%;
+    max-width: 720px;
+    background: var(--card-bg);
+    backdrop-filter: blur(28px) saturate(1.6);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.anniversary-card::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, rgba(251, 194, 235, 0.5) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(30px);
+}
+
+.anniversary-card::after {
+    content: "";
+    position: absolute;
+    bottom: -50px;
+    left: -50px;
+    width: 140px;
+    height: 140px;
+    background: radial-gradient(circle, rgba(143, 211, 244, 0.45) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(30px);
+}
+
+.anniversary-label {
+    position: relative;
+    z-index: 1;
+    display: block;
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.anniversary-countdown {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.anniversary-countdown div {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+    min-width: 4.8rem;
+    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.1);
+}
+
+.anniversary-countdown span {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+}
+
+.anniversary-countdown small {
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+.anniversary-date {
+    position: relative;
+    z-index: 1;
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+/* ==================== 她对我的意义 ==================== */
+.meaning-section {
+    padding: 5rem 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.meaning-section h2 {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 3rem;
+}
+
+.meaning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.4rem;
+}
+
+.meaning-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border-radius: 1.6rem;
+    padding: 2rem 1.6rem;
+    box-shadow: var(--shadow-soft), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s ease;
+}
+
+.meaning-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.meaning-card:hover {
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    transform: translateY(-5px);
+}
+
+.meaning-card h3 {
+    font-size: 1.15rem;
+    color: var(--primary-dark);
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+}
+
+.meaning-card p {
+    color: var(--text);
+    font-size: 1.02rem;
+    line-height: 1.85;
+    white-space: pre-wrap;
+}
+
+/* ==================== 生日过渡页 ==================== */
+.birthday-transition {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    text-align: center;
+}
+
+.transition-content {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.transition-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.transition-content p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.05em;
+}
+
+.transition-content h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.2rem;
+}
+
+.transition-content .arrow-hint {
+    font-size: 2rem;
+    color: var(--accent);
+    animation: bounceArrow 1.8s infinite;
+}
+
+@keyframes bounceArrow {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(12px); }
+    60% { transform: translateY(6px); }
+}
+
+/* ==================== 生日专属页 ==================== */
+.birthday-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    background: linear-gradient(180deg, #1a1225 0%, #2d1f3d 50%, #1a1225 100%);
+    overflow: hidden;
+}
+
+.birthday-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(230, 110, 247, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255, 159, 90, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255, 204, 77, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.birthday-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 720px;
+    width: 100%;
+}
+
+.birthday-pretitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.birthday-title {
+    font-size: 3.6rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 4px 30px rgba(230, 110, 247, 0.4);
+    margin-bottom: 0.8rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s;
+}
+
+.birthday-subtitle {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+}
+
+.birthday-section.visible .birthday-pretitle,
+.birthday-section.visible .birthday-title,
+.birthday-section.visible .birthday-subtitle {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cake-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2.5rem;
+    cursor: pointer;
+}
+
+.cake {
+    width: 280px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.35));
+    transition: transform 0.4s ease;
+}
+
+.cake-container:hover .cake {
+    transform: scale(1.03);
+}
+
+.candle {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.candle:hover {
+    transform: scale(1.08);
+}
+
+.candle .flame,
+.candle .flame-core {
+    transform-origin: center bottom;
+    animation: flicker 0.6s ease-in-out infinite alternate;
+}
+
+.candle:nth-of-type(2) .flame,
+.candle:nth-of-type(2) .flame-core {
+    animation-delay: 0.1s;
+}
+
+.candle:nth-of-type(3) .flame,
+.candle:nth-of-type(3) .flame-core {
+    animation-delay: 0.2s;
+}
+
+@keyframes flicker {
+    0% { transform: scale(1) rotate(-2deg); opacity: 1; }
+    100% { transform: scale(1.08) rotate(2deg); opacity: 0.9; }
+}
+
+.candle.extinguished .flame,
+.candle.extinguished .flame-core {
+    animation: blowOut 0.5s ease forwards;
+}
+
+@keyframes blowOut {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.6; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+.cake-hint {
+    position: absolute;
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    transition: opacity 0.4s ease;
+}
+
+.cake-container.all-out .cake-hint {
+    opacity: 0;
+}
+
+.birthday-message {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1.8rem;
+    padding: 2rem 2.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+    transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s,
+                transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+    pointer-events: none;
+}
+
+.birthday-message.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.birthday-message h3 {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.birthday-message .typewriter {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 2;
+    text-align: left;
+    min-height: 80px;
+}
+
+.birthday-message .typewriter::after {
+    color: #ffcc4d;
+}
+
+.fireworks {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* ==================== 未来约定 ==================== */
+.future-section {
+    padding: 5rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.future-section h2 {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 3rem;
+}
+
+.future-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.future-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1.2rem;
+    padding: 1.2rem 1.4rem;
+    box-shadow: var(--shadow-soft), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.future-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.future-item:hover {
+    box-shadow: var(--shadow);
+}
+
+.future-item .checkbox {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, transform 0.3s ease;
+    font-size: 0.85rem;
+    color: transparent;
+}
+
+.future-item.checked .checkbox {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.future-item p {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.7;
+    transition: color 0.3s ease;
+}
+
+.future-item.checked p {
+    color: var(--text-light);
+    text-decoration: line-through;
+    text-decoration-color: var(--primary);
+    text-decoration-thickness: 2px;
+}
+
+.next-milestone {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(161, 140, 209, 0.12), rgba(251, 194, 235, 0.12), rgba(143, 211, 244, 0.12));
+    border-radius: 1.6rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.next-milestone.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.next-milestone h3 {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 0.6rem;
+}
+
+.next-milestone p {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ==================== 板块分隔线 ==================== */
+.section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: rgba(139, 92, 246, 0.35);
+    font-size: 1.4rem;
+    position: relative;
+}
+
+.section-divider::before,
+.section-divider::after {
+    content: "";
+    flex: 1;
+    max-width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
+}
+
+.section-divider span {
+    margin: 0 1rem;
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.4));
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+}
+
 /* ==================== 响应式 ==================== */
 @media (max-width: 720px) {
     .photo-wall {
@@ -1107,8 +1844,16 @@ footer p {
         left: 18px;
         width: 12px;
         height: 12px;
-        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 12px rgba(139, 92, 246, 0.5);
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 12px var(--theme-color);
     }
+
+    .theme-chapter {
+        padding: 2.5rem 1rem;
+        border-radius: 1.4rem;
+    }
+    .theme-chapter .chapter-icon { font-size: 2.4rem; }
+    .theme-chapter h3 { font-size: 1.5rem; }
+    .theme-chapter p { font-size: 0.9rem; }
 
     .timeline-item:nth-child(even) .timeline-img,
     .timeline-item:nth-child(even) .timeline-text {
@@ -1134,6 +1879,27 @@ footer p {
     .lightbox-prev { left: 0.4rem; }
     .lightbox-next { right: 0.4rem; }
 
+    .stats-section { padding: 3rem 1rem; }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+    .stat-card { padding: 1.4rem 0.6rem; border-radius: 1.2rem; }
+    .stat-number { font-size: 1.8rem; }
+    .stat-label { font-size: 0.85rem; }
+
+    .anniversary-section { padding: 1rem 1rem 3rem; }
+    .anniversary-card { padding: 1.8rem 1.2rem; border-radius: 1.6rem; }
+    .anniversary-countdown { gap: 0.6rem; }
+    .anniversary-countdown div { padding: 0.7rem 0.5rem; min-width: 3.6rem; border-radius: 0.8rem; }
+    .anniversary-countdown span { font-size: 1.4rem; }
+    .anniversary-countdown small { font-size: 0.72rem; }
+    .anniversary-label { font-size: 0.95rem; margin-bottom: 1.2rem; }
+
+    .section-divider { padding: 1.5rem 1rem; font-size: 1.2rem; }
+    .section-divider::before,
+    .section-divider::after { max-width: 60px; }
+
     .music-player {
         width: 46px;
         height: 46px;
@@ -1143,6 +1909,39 @@ footer p {
     .music-icon { font-size: 1.1rem; }
 
     footer { padding: 2rem 1rem; font-size: 0.85rem; }
+
+    .meaning-section { padding: 3rem 1rem; }
+    .meaning-section h2 { font-size: 1.6rem; margin-bottom: 2rem; }
+    .meaning-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .meaning-card { padding: 1.4rem 1.2rem; border-radius: 1.3rem; }
+    .meaning-card h3 { font-size: 1.05rem; }
+    .meaning-card p { font-size: 0.95rem; }
+
+    .birthday-transition { min-height: 50vh; padding: 3rem 1rem; }
+    .transition-content h2 { font-size: 1.6rem; }
+    .transition-content p { font-size: 0.95rem; }
+
+    .birthday-section { padding: 3rem 1rem; }
+    .birthday-title { font-size: 2.4rem; }
+    .birthday-subtitle { font-size: 1rem; margin-bottom: 1.5rem; }
+    .cake { width: 220px; }
+    .birthday-message { padding: 1.4rem 1.2rem; border-radius: 1.4rem; }
+    .birthday-message h3 { font-size: 1.15rem; }
+    .birthday-message .typewriter { font-size: 0.95rem; }
+
+    .future-section { padding: 3rem 1rem; }
+    .future-section h2 { font-size: 1.6rem; margin-bottom: 2rem; }
+    .future-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+    .future-item { padding: 1rem 1.1rem; }
+    .next-milestone { padding: 1.4rem 1rem; }
+    .next-milestone p { font-size: 1.2rem; }
+}
+
+@media (max-width: 360px) {
+    .stats-grid { gap: 0.6rem; }
+    .stat-number { font-size: 1.55rem; }
+    .stat-label { font-size: 0.78rem; }
+    .anniversary-countdown div { min-width: 3.2rem; }
 }
 
 @media (max-width: 360px) {
