@@ -182,57 +182,158 @@
 
     <!-- 生日专属页 -->
     <section class="birthday-section" id="birthdaySection">
+        <!-- 星空背景层 -->
+        <div class="birthday-stars" id="birthdayStars"></div>
+        <div class="birthday-nebula">
+            <div class="nebula nebula-1"></div>
+            <div class="nebula nebula-2"></div>
+            <div class="nebula nebula-3"></div>
+        </div>
+        <canvas class="birthday-meteors" id="birthdayMeteors"></canvas>
+
+        <!-- 巨型 23 背景数字 -->
+        <div class="birthday-age" id="birthdayAge">23</div>
+
+        <!-- 聚光灯 -->
+        <div class="spotlight"></div>
+
         <div class="birthday-content">
-            <p class="birthday-pretitle" id="birthdayPretitle">给最特别的你</p>
-            <h2 class="birthday-title" id="birthdayTitle">生日快乐</h2>
-            <p class="birthday-subtitle" id="birthdaySubtitle">点击蜡烛，一起许愿吧</p>
+            <p class="birthday-pretitle" id="birthdayPretitle">致我 23 岁的女孩</p>
+            <h2 class="birthday-title" id="birthdayTitle">
+                <span>生</span><span>日</span><span>快</span><span>乐</span>
+            </h2>
+            <p class="birthday-subtitle" id="birthdaySubtitle">愿你眼里有星河，笑里有清风</p>
 
             <div class="cake-container" id="cakeContainer">
-                <svg class="cake" viewBox="0 0 320 260" aria-label="生日蛋糕">
+                <svg class="cake" viewBox="0 0 360 300" aria-label="生日蛋糕">
+                    <defs>
+                        <linearGradient id="plateGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#d4af37" stop-opacity="0.3"/>
+                            <stop offset="50%" stop-color="#ffd700" stop-opacity="0.55"/>
+                            <stop offset="100%" stop-color="#d4af37" stop-opacity="0.3"/>
+                        </linearGradient>
+                        <linearGradient id="cakeBaseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#f8d7d7"/>
+                            <stop offset="100%" stop-color="#e8a8a8"/>
+                        </linearGradient>
+                        <linearGradient id="cakeSideGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#e8a8a8"/>
+                            <stop offset="100%" stop-color="#d48686"/>
+                        </linearGradient>
+                        <linearGradient id="cakeMidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ffe4e1"/>
+                            <stop offset="100%" stop-color="#f0c0c0"/>
+                        </linearGradient>
+                        <linearGradient id="cakeTopGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fff0f0"/>
+                            <stop offset="100%" stop-color="#ffe4e1"/>
+                        </linearGradient>
+                        <linearGradient id="candleGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#c4b5e0"/>
+                            <stop offset="100%" stop-color="#a18cd1"/>
+                        </linearGradient>
+                        <linearGradient id="candleGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#b8e3f5"/>
+                            <stop offset="100%" stop-color="#8fd3f4"/>
+                        </linearGradient>
+                        <linearGradient id="candleGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ffd6f0"/>
+                            <stop offset="100%" stop-color="#fbc2eb"/>
+                        </linearGradient>
+                        <radialGradient id="flameGlow">
+                            <stop offset="0%" stop-color="#ffcc4d" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#ff9f43" stop-opacity="0"/>
+                        </radialGradient>
+                        <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fff8db"/>
+                            <stop offset="30%" stop-color="#ffd700"/>
+                            <stop offset="70%" stop-color="#d4af37"/>
+                            <stop offset="100%" stop-color="#fff8db"/>
+                        </linearGradient>
+                        <filter id="textGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="2" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
                     <!-- 蛋糕托盘 -->
-                    <ellipse cx="160" cy="245" rx="130" ry="22" fill="#e8d5c4" opacity="0.6"/>
+                    <ellipse cx="180" cy="278" rx="150" ry="24" fill="url(#plateGradient)"/>
                     <!-- 蛋糕底层 -->
-                    <path d="M60 180 Q60 230 160 230 Q260 230 260 180 L260 130 Q260 180 160 180 Q60 180 60 130 Z" fill="#f4c2c2"/>
-                    <path d="M60 130 Q60 180 160 180 Q260 180 260 130 Q260 160 160 160 Q60 160 60 130" fill="#e8a8a8"/>
-                    <!-- 蛋糕上层 -->
-                    <path d="M85 130 Q85 165 160 165 Q235 165 235 130 L235 90 Q235 125 160 125 Q85 125 85 90 Z" fill="#ffe4e1"/>
-                    <path d="M85 90 Q85 125 160 125 Q235 125 235 90 Q235 115 160 115 Q85 115 85 90" fill="#f0c0c0"/>
+                    <path d="M50 200 Q50 260 180 260 Q310 260 310 200 L310 140 Q310 200 180 200 Q50 200 50 140 Z" fill="url(#cakeBaseGradient)"/>
+                    <path d="M50 140 Q50 200 180 200 Q310 200 310 140 Q310 180 180 180 Q50 180 50 140" fill="url(#cakeSideGradient)"/>
+                    <!-- 蛋糕中层 -->
+                    <path d="M75 140 Q75 185 180 185 Q285 185 285 140 L285 90 Q285 135 180 135 Q75 135 75 90 Z" fill="url(#cakeMidGradient)"/>
+                    <path d="M75 90 Q75 135 180 135 Q285 135 285 90 Q285 120 180 120 Q75 120 75 90" fill="url(#cakeSideGradient)" opacity="0.7"/>
+                    <!-- 蛋糕顶层 -->
+                    <path d="M100 90 Q100 125 180 125 Q260 125 260 90 L260 50 Q260 85 180 85 Q100 85 100 50 Z" fill="url(#cakeTopGradient)"/>
                     <!-- 顶层糖霜 -->
-                    <ellipse cx="160" cy="90" rx="75" ry="18" fill="#fff5f5"/>
+                    <ellipse cx="180" cy="50" rx="82" ry="20" fill="#fff5f5"/>
+
+                    <!-- 装饰草莓 -->
+                    <circle cx="95" cy="55" r="9" fill="#e74c3c"/>
+                    <circle cx="265" cy="55" r="9" fill="#e74c3c"/>
+                    <circle cx="180" cy="68" r="9" fill="#e74c3c"/>
+                    <circle cx="130" cy="95" r="7" fill="#e74c3c"/>
+                    <circle cx="230" cy="95" r="7" fill="#e74c3c"/>
+
+                    <!-- 珍珠装饰 -->
+                    <circle cx="120" cy="155" r="5" fill="#fff" opacity="0.9"/>
+                    <circle cx="180" cy="155" r="5" fill="#fff" opacity="0.9"/>
+                    <circle cx="240" cy="155" r="5" fill="#fff" opacity="0.9"/>
+                    <circle cx="150" cy="205" r="6" fill="#fff" opacity="0.9"/>
+                    <circle cx="210" cy="205" r="6" fill="#fff" opacity="0.9"/>
+
+                    <!-- 23 数字牌 -->
+                    <g transform="translate(180, -28)">
+                        <rect x="-24" y="-22" width="48" height="30" rx="6" fill="rgba(255,255,255,0.15)" stroke="url(#goldGradient)" stroke-width="1.5"/>
+                        <text x="0" y="-2" text-anchor="middle" font-size="20" font-family="'Noto Serif SC', serif" fill="url(#goldGradient)" font-weight="700" filter="url(#textGlow)">23</text>
+                    </g>
+
                     <!-- 蜡烛 1 -->
-                    <g class="candle" data-index="0" transform="translate(120, 55)">
-                        <rect x="-6" y="0" width="12" height="35" rx="2" fill="#a18cd1"/>
-                        <rect x="-6" y="0" width="12" height="8" rx="2" fill="#c4b5e0"/>
-                        <path class="flame" d="M0 -4 Q-6 -18 0 -32 Q6 -18 0 -4" fill="#ffcc4d"/>
-                        <circle class="flame-core" cx="0" cy="-18" r="5" fill="#ff9f43"/>
+                    <g class="candle" data-index="0" transform="translate(145, 5)">
+                        <rect x="-7" y="0" width="14" height="42" rx="3" fill="url(#candleGradient1)"/>
+                        <rect x="-7" y="0" width="14" height="10" rx="3" fill="#fff" opacity="0.35"/>
+                        <circle class="flame-glow" cx="0" cy="-20" r="20" fill="url(#flameGlow)" opacity="0.5"/>
+                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#ffcc4d"/>
+                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ff9f43"/>
                     </g>
                     <!-- 蜡烛 2 -->
-                    <g class="candle" data-index="1" transform="translate(160, 45)">
-                        <rect x="-6" y="0" width="12" height="35" rx="2" fill="#8fd3f4"/>
-                        <rect x="-6" y="0" width="12" height="8" rx="2" fill="#b8e3f5"/>
-                        <path class="flame" d="M0 -4 Q-6 -18 0 -32 Q6 -18 0 -4" fill="#ffcc4d"/>
-                        <circle class="flame-core" cx="0" cy="-18" r="5" fill="#ff9f43"/>
+                    <g class="candle" data-index="1" transform="translate(180, -5)">
+                        <rect x="-7" y="0" width="14" height="42" rx="3" fill="url(#candleGradient2)"/>
+                        <rect x="-7" y="0" width="14" height="10" rx="3" fill="#fff" opacity="0.35"/>
+                        <circle class="flame-glow" cx="0" cy="-20" r="20" fill="url(#flameGlow)" opacity="0.5"/>
+                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#ffcc4d"/>
+                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ff9f43"/>
                     </g>
                     <!-- 蜡烛 3 -->
-                    <g class="candle" data-index="2" transform="translate(200, 55)">
-                        <rect x="-6" y="0" width="12" height="35" rx="2" fill="#fbc2eb"/>
-                        <rect x="-6" y="0" width="12" height="8" rx="2" fill="#ffd6f0"/>
-                        <path class="flame" d="M0 -4 Q-6 -18 0 -32 Q6 -18 0 -4" fill="#ffcc4d"/>
-                        <circle class="flame-core" cx="0" cy="-18" r="5" fill="#ff9f43"/>
+                    <g class="candle" data-index="2" transform="translate(215, 5)">
+                        <rect x="-7" y="0" width="14" height="42" rx="3" fill="url(#candleGradient3)"/>
+                        <rect x="-7" y="0" width="14" height="10" rx="3" fill="#fff" opacity="0.35"/>
+                        <circle class="flame-glow" cx="0" cy="-20" r="20" fill="url(#flameGlow)" opacity="0.5"/>
+                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#ffcc4d"/>
+                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ff9f43"/>
                     </g>
-                    <!-- 装饰草莓 -->
-                    <circle cx="110" cy="95" r="8" fill="#e74c3c"/>
-                    <circle cx="210" cy="95" r="8" fill="#e74c3c"/>
-                    <circle cx="160" cy="105" r="8" fill="#e74c3c"/>
                 </svg>
-                <p class="cake-hint" id="cakeHint">✨ 点一下蜡烛</p>
+                <div class="cake-glow"></div>
+                <p class="cake-hint" id="cakeHint">✨ 点一下蜡烛，为她许愿</p>
             </div>
 
             <div class="birthday-message" id="birthdayMessage">
                 <h3>给你的话</h3>
                 <div class="typewriter" id="birthdayTypewriter"></div>
             </div>
+
+            <div class="wish-delivered" id="wishDelivered">
+                <span>✨ 愿望已送达星空 ✨</span>
+            </div>
         </div>
+
+        <!-- 粒子容器 -->
+        <div class="stardust-container" id="stardustContainer"></div>
+        <div class="smoke-container" id="smokeContainer"></div>
 
         <!-- 烟花画布 -->
         <canvas class="fireworks" id="fireworks"></canvas>

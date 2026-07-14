@@ -1204,12 +1204,123 @@
         const subtitle = document.getElementById("birthdaySubtitle");
         const cakeHint = document.getElementById("cakeHint");
 
-        if (pretitle) pretitle.textContent = birthdayConfig.pretitle || "给最特别的你";
-        if (title) title.textContent = birthdayConfig.title || "生日快乐";
-        if (subtitle) subtitle.textContent = birthdayConfig.subtitle || "点击蜡烛，一起许愿吧";
+        if (pretitle) pretitle.textContent = birthdayConfig.pretitle || "致我 23 岁的女孩";
+        if (title) {
+            // 保持 span 包裹的结构
+            const chars = (birthdayConfig.title || "生日快乐").split("");
+            title.innerHTML = chars.map(ch => `<span>${ch}</span>`).join("");
+        }
+        if (subtitle) subtitle.textContent = birthdayConfig.subtitle || "愿你眼里有星河，笑里有清风";
 
-        // 生日页进入视口时添加 visible 类，触发标题入场动画
-        // 同时监听进入/离开，自动切换生日音乐
+        // ==================== 星空背景生成 ====================
+        const starsContainer = document.getElementById("birthdayStars");
+        const stardustContainer = document.getElementById("stardustContainer");
+
+        function createStars() {
+            if (!starsContainer) return;
+            const count = Math.min(120, Math.floor(window.innerWidth / 12));
+            starsContainer.innerHTML = "";
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement("div");
+                star.className = "star";
+                const size = Math.random() * 2.5 + 0.5;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.setProperty("--duration", `${Math.random() * 3 + 2}s`);
+                star.style.setProperty("--opacity", `${Math.random() * 0.5 + 0.3}`);
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function createStardust() {
+            if (!stardustContainer) return;
+            stardustContainer.innerHTML = "";
+            const count = 24;
+            for (let i = 0; i < count; i++) {
+                const dust = document.createElement("div");
+                dust.className = "dust";
+                const size = Math.random() * 4 + 2;
+                dust.style.width = `${size}px`;
+                dust.style.height = `${size}px`;
+                dust.style.left = `${Math.random() * 100}%`;
+                dust.style.top = `${Math.random() * 100}%`;
+                dust.style.setProperty("--duration", `${Math.random() * 4 + 4}s`);
+                dust.style.setProperty("--opacity", `${Math.random() * 0.4 + 0.2}`);
+                dust.style.setProperty("--tx", `${(Math.random() - 0.5) * 40}px`);
+                dust.style.setProperty("--ty", `${(Math.random() - 0.5) * 60 - 20}px`);
+                dust.style.animationDelay = `${Math.random() * 4}s`;
+                stardustContainer.appendChild(dust);
+            }
+        }
+
+        createStars();
+        createStardust();
+        window.addEventListener("resize", () => {
+            createStars();
+        });
+
+        // ==================== 流星画布 ====================
+        const meteorCanvas = document.getElementById("birthdayMeteors");
+        if (meteorCanvas) {
+            const mctx = meteorCanvas.getContext("2d");
+            let mWidth, mHeight;
+            let meteors = [];
+
+            function resizeMeteor() {
+                mWidth = section.offsetWidth;
+                mHeight = section.offsetHeight;
+                meteorCanvas.width = mWidth;
+                meteorCanvas.height = mHeight;
+            }
+
+            function createMeteor() {
+                const x = Math.random() * mWidth;
+                const y = Math.random() * mHeight * 0.4;
+                const length = Math.random() * 80 + 40;
+                const speed = Math.random() * 3 + 2;
+                const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.2;
+                meteors.push({ x, y, length, speed, angle, alpha: 1 });
+            }
+
+            function drawMeteors() {
+                mctx.clearRect(0, 0, mWidth, mHeight);
+                for (let i = meteors.length - 1; i >= 0; i--) {
+                    const m = meteors[i];
+                    const tailX = m.x - Math.cos(m.angle) * m.length;
+                    const tailY = m.y - Math.sin(m.angle) * m.length;
+                    const grad = mctx.createLinearGradient(m.x, m.y, tailX, tailY);
+                    grad.addColorStop(0, `rgba(255, 255, 255, ${m.alpha})`);
+                    grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+                    mctx.strokeStyle = grad;
+                    mctx.lineWidth = 2;
+                    mctx.beginPath();
+                    mctx.moveTo(m.x, m.y);
+                    mctx.lineTo(tailX, tailY);
+                    mctx.stroke();
+
+                    m.x += Math.cos(m.angle) * m.speed;
+                    m.y += Math.sin(m.angle) * m.speed;
+                    m.alpha -= 0.008;
+
+                    if (m.x > mWidth + m.length || m.y > mHeight + m.length || m.alpha <= 0) {
+                        meteors.splice(i, 1);
+                    }
+                }
+                requestAnimationFrame(drawMeteors);
+            }
+
+            resizeMeteor();
+            drawMeteors();
+            setInterval(() => {
+                if (Math.random() > 0.6) createMeteor();
+            }, 2000);
+            window.addEventListener("resize", resizeMeteor);
+        }
+
+        // ==================== 生日页进入视口动画 + 音乐切换 ====================
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1227,11 +1338,13 @@
 
         sectionObserver.observe(section);
 
-        // 蜡烛交互
+        // ==================== 蜡烛交互 ====================
         const candles = section.querySelectorAll(".candle");
         const cakeContainer = document.getElementById("cakeContainer");
         const birthdayMessage = document.getElementById("birthdayMessage");
         const typewriter = document.getElementById("birthdayTypewriter");
+        const smokeContainer = document.getElementById("smokeContainer");
+        const wishDelivered = document.getElementById("wishDelivered");
         let extinguishedCount = 0;
         let messageTyped = false;
 
@@ -1251,6 +1364,47 @@
             }, 70);
         }
 
+        function createSmoke(candleEl) {
+            if (!smokeContainer) return;
+            const rect = candleEl.getBoundingClientRect();
+            const sectionRect = section.getBoundingClientRect();
+            const x = rect.left - sectionRect.left + rect.width / 2;
+            const y = rect.top - sectionRect.top;
+
+            for (let i = 0; i < 6; i++) {
+                const smoke = document.createElement("div");
+                smoke.className = "smoke";
+                smoke.style.left = `${x + (Math.random() - 0.5) * 10}px`;
+                smoke.style.top = `${y}px`;
+                smoke.style.setProperty("--dx", `${(Math.random() - 0.5) * 30}px`);
+                smoke.style.animationDelay = `${i * 0.08}s`;
+                smokeContainer.appendChild(smoke);
+                setTimeout(() => smoke.remove(), 1600);
+            }
+        }
+
+        function createSparkleBurst(x, y) {
+            if (!stardustContainer) return;
+            for (let i = 0; i < 16; i++) {
+                const spark = document.createElement("div");
+                spark.className = "dust";
+                const size = Math.random() * 5 + 3;
+                spark.style.width = `${size}px`;
+                spark.style.height = `${size}px`;
+                spark.style.left = `${x}px`;
+                spark.style.top = `${y}px`;
+                const angle = (Math.PI * 2 / 16) * i + Math.random() * 0.3;
+                const dist = Math.random() * 80 + 40;
+                spark.style.setProperty("--tx", `${Math.cos(angle) * dist}px`);
+                spark.style.setProperty("--ty", `${Math.sin(angle) * dist}px`);
+                spark.style.setProperty("--duration", "1.2s");
+                spark.style.setProperty("--opacity", "1");
+                spark.style.animation = "dustFloat 1.2s ease-out forwards";
+                stardustContainer.appendChild(spark);
+                setTimeout(() => spark.remove(), 1200);
+            }
+        }
+
         function onAllCandlesOut() {
             if (cakeContainer) cakeContainer.classList.add("all-out");
             if (cakeHint) cakeHint.textContent = birthdayConfig.afterBlowHint || "愿望已实现 ✨";
@@ -1264,6 +1418,11 @@
                 }
             }
 
+            // 显示“愿望已送达”
+            if (wishDelivered) {
+                setTimeout(() => wishDelivered.classList.add("show"), 1200);
+            }
+
             // 触发烟花
             if (typeof window.startBirthdayFireworks === "function") {
                 window.startBirthdayFireworks();
@@ -1274,6 +1433,15 @@
             candle.addEventListener("click", () => {
                 if (candle.classList.contains("extinguished")) return;
                 candle.classList.add("extinguished");
+                createSmoke(candle);
+
+                const rect = candle.getBoundingClientRect();
+                const sectionRect = section.getBoundingClientRect();
+                createSparkleBurst(
+                    rect.left - sectionRect.left + rect.width / 2,
+                    rect.top - sectionRect.top
+                );
+
                 extinguishedCount++;
                 if (extinguishedCount >= candles.length) {
                     setTimeout(onAllCandlesOut, 500);
