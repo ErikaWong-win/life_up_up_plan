@@ -21,12 +21,12 @@
         let bgCanvas = null;
         let lastMeteorTime = 0;
         let nextMeteorDelay = 0;
-        let activeGlowColor = { r: 25, g: 55, b: 95, a: 0.35 };
+        let activeGlowColor = { r: 90, g: 80, b: 75, a: 0.22 };
         let targetGlowColor = { ...activeGlowColor };
 
         function parseRgba(rgba) {
             const m = rgba.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+))?\s*\)/);
-            if (!m) return { r: 25, g: 55, b: 95, a: 0.35 };
+            if (!m) return { r: 90, g: 80, b: 75, a: 0.22 };
             return {
                 r: parseFloat(m[1]),
                 g: parseFloat(m[2]),
@@ -69,8 +69,8 @@
 
             // 顶部微微的 atmospheric glow，让天空不那么平
             const glow = bgCtx.createRadialGradient(width * 0.5, 0, 0, width * 0.5, height * 0.2, height * 0.8);
-            glow.addColorStop(0, "rgba(25, 55, 95, 0.35)");
-            glow.addColorStop(0.5, "rgba(15, 35, 65, 0.12)");
+            glow.addColorStop(0, "rgba(80, 70, 65, 0.22)");
+            glow.addColorStop(0.5, "rgba(60, 55, 55, 0.08)");
             glow.addColorStop(1, "rgba(5, 10, 18, 0)");
             bgCtx.fillStyle = glow;
             bgCtx.fillRect(0, 0, width, height);
@@ -217,7 +217,7 @@
             }
 
             // 根据当前主题平滑过渡顶部光晕
-            activeGlowColor = lerpColor(activeGlowColor, targetGlowColor, 0.04);
+            activeGlowColor = lerpColor(activeGlowColor, targetGlowColor, 0.025);
             const glowRgba = `rgba(${Math.round(activeGlowColor.r)}, ${Math.round(activeGlowColor.g)}, ${Math.round(activeGlowColor.b)}, ${activeGlowColor.a.toFixed(3)})`;
             const themeGlow = ctx.createRadialGradient(width * 0.5, height * 0.05, 0, width * 0.5, height * 0.18, height * 0.55);
             themeGlow.addColorStop(0, glowRgba);
@@ -255,12 +255,14 @@
         const photos = Array.isArray(CONFIG.photos) ? CONFIG.photos : [];
         const totalPhotos = photos.length;
 
-        // 根据屏幕尺寸计算所需格子数：每个格子约 200px，覆盖约 1.5 倍视口即可
-        // 避免固定 36 个导致首屏一次性加载过多大图
+        // 根据屏幕尺寸计算所需格子数
+        // PC 端使用 200px 基准格子，覆盖约 1.5 倍视口高度，确保铺满面
         const cellSize = window.innerWidth <= 720 ? 90 : 200;
         const cols = Math.max(3, Math.ceil(window.innerWidth / cellSize));
         const rows = Math.max(3, Math.ceil(window.innerHeight / cellSize * 1.5));
-        const WALL_CELLS = Math.min(24, cols * rows);
+        // PC 端放开上限，避免大屏幕上出现空白；移动端控制数量保证性能
+        const maxCells = window.innerWidth <= 720 ? 48 : 240;
+        const WALL_CELLS = Math.min(cols * rows, maxCells);
 
         photoWall.innerHTML = "";
 
@@ -268,7 +270,10 @@
         const cells = [];
         for (let i = 0; i < WALL_CELLS; i++) {
             const photo = totalPhotos > 0 ? photos[i % totalPhotos] : null;
-            const delay = (i * 0.05).toFixed(2);
+            // 动画延迟按行列位置计算，避免大数量时尾部延迟过长
+            const row = Math.floor(i / cols);
+            const col = i % cols;
+            const delay = Math.min((row + col) * 0.04, 1.5).toFixed(2);
             const cell = document.createElement("div");
             cell.className = "wall-cell flip-in";
             cell.style.animationDelay = `${delay}s`;
@@ -291,7 +296,7 @@
         }
 
         // 为每个格子加载图片；首屏直接加载，首屏外用 IntersectionObserver 延迟加载
-        const eagerCount = Math.min(WALL_CELLS, Math.ceil(cols * rows * 0.6));
+        const eagerCount = Math.min(WALL_CELLS, Math.ceil(cols * Math.ceil(window.innerHeight / cellSize) * 0.75));
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (!entry.isIntersecting) return;
@@ -318,7 +323,7 @@
                 img.src = pickSrc(photo);
                 img.alt = "回忆";
                 img.decoding = "async";
-                img.loading = index < 6 ? "eager" : "lazy";
+                img.loading = index < 9 ? "eager" : "lazy";
                 cell.appendChild(img);
             } else {
                 observer.observe(cell);
@@ -734,7 +739,7 @@
                     el.classList.add("done");
                     typewriterDone[side] = true;
                 }
-            }, 55);
+            }, 70);
         }
 
         function showFace(face) {
@@ -772,10 +777,16 @@
         memories.forEach(item => {
             if (!item.img) return;
             if (Array.isArray(item.img)) {
-                item.img.forEach(src => galleryImages.push({ src, title: item.title, date: item.date }));
+                item.img.forEach(src => galleryImages.push({ src, title: item.title, date: item.date, source: "memory" }));
             } else {
-                galleryImages.push({ src: item.img, title: item.title, date: item.date });
+                galleryImages.push({ src: item.img, title: item.title, date: item.date, source: "memory" });
             }
+        });
+
+        const footprints = Array.isArray(CONFIG.footprints) ? CONFIG.footprints : [];
+        footprints.forEach(item => {
+            if (!Array.isArray(item.photos)) return;
+            item.photos.forEach(src => galleryImages.push({ src, title: item.city, date: item.date, source: "footprint", city: item.city }));
         });
     }
 
@@ -783,17 +794,20 @@
         const grid = document.getElementById("galleryGrid");
         if (!grid) return;
 
-        collectGalleryImages();
-        if (galleryImages.length === 0) {
+        const memoryImages = galleryImages.filter(item => item.source === "memory");
+        if (memoryImages.length === 0) {
             grid.innerHTML = `<div class="gallery-item visible" style="grid-column: 1 / -1; display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e0c3fc,#fbc2eb);color:#fff;">在 config.js 的 memories 里添加照片，这里会自动生成画廊 💕</div>`;
             return;
         }
 
-        grid.innerHTML = galleryImages.map((item, index) => `
-            <div class="gallery-item" data-index="${index}">
-                <img src="${item.src}" alt="${item.title || "回忆"}" loading="lazy">
-            </div>
-        `).join("");
+        grid.innerHTML = galleryImages.map((item, index) => {
+            if (item.source !== "memory") return "";
+            return `
+                <div class="gallery-item" data-index="${index}">
+                    <img src="${item.src}" alt="${item.title || "回忆"}" loading="lazy">
+                </div>
+            `;
+        }).join("");
 
         observeGallery();
         initLightbox();
@@ -818,13 +832,42 @@
     // ==================== 灯箱 ====================
     let currentLightboxIndex = 0;
 
-    function initLightbox() {
+    function openLightbox() {
         const lightbox = document.getElementById("lightbox");
         const img = document.getElementById("lightboxImg");
+        if (galleryImages.length === 0 || !lightbox || !img) return;
+        img.src = galleryImages[currentLightboxIndex].src;
+        lightbox.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById("lightbox");
+        if (!lightbox) return;
+        lightbox.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+
+    function showLightboxPrev() {
+        const img = document.getElementById("lightboxImg");
+        if (!img || galleryImages.length === 0) return;
+        currentLightboxIndex = (currentLightboxIndex - 1 + galleryImages.length) % galleryImages.length;
+        img.src = galleryImages[currentLightboxIndex].src;
+    }
+
+    function showLightboxNext() {
+        const img = document.getElementById("lightboxImg");
+        if (!img || galleryImages.length === 0) return;
+        currentLightboxIndex = (currentLightboxIndex + 1) % galleryImages.length;
+        img.src = galleryImages[currentLightboxIndex].src;
+    }
+
+    function initLightbox() {
+        const lightbox = document.getElementById("lightbox");
         const closeBtn = document.getElementById("lightboxClose");
         const prevBtn = document.getElementById("lightboxPrev");
         const nextBtn = document.getElementById("lightboxNext");
-        if (!lightbox || !img) return;
+        if (!lightbox) return;
 
         document.querySelectorAll(".gallery-item").forEach(item => {
             item.addEventListener("click", () => {
@@ -833,40 +876,267 @@
             });
         });
 
-        function openLightbox() {
-            if (galleryImages.length === 0) return;
-            img.src = galleryImages[currentLightboxIndex].src;
-            lightbox.classList.add("active");
-            document.body.style.overflow = "hidden";
-        }
-
-        function closeLightbox() {
-            lightbox.classList.remove("active");
-            document.body.style.overflow = "";
-        }
-
-        function showPrev() {
-            currentLightboxIndex = (currentLightboxIndex - 1 + galleryImages.length) % galleryImages.length;
-            img.src = galleryImages[currentLightboxIndex].src;
-        }
-
-        function showNext() {
-            currentLightboxIndex = (currentLightboxIndex + 1) % galleryImages.length;
-            img.src = galleryImages[currentLightboxIndex].src;
-        }
-
-        closeBtn.addEventListener("click", closeLightbox);
-        prevBtn.addEventListener("click", (e) => { e.stopPropagation(); showPrev(); });
-        nextBtn.addEventListener("click", (e) => { e.stopPropagation(); showNext(); });
+        if (closeBtn) closeBtn.addEventListener("click", closeLightbox);
+        if (prevBtn) prevBtn.addEventListener("click", (e) => { e.stopPropagation(); showLightboxPrev(); });
+        if (nextBtn) nextBtn.addEventListener("click", (e) => { e.stopPropagation(); showLightboxNext(); });
         lightbox.addEventListener("click", (e) => {
             if (e.target === lightbox) closeLightbox();
         });
         document.addEventListener("keydown", (e) => {
             if (!lightbox.classList.contains("active")) return;
             if (e.key === "Escape") closeLightbox();
-            if (e.key === "ArrowLeft") showPrev();
-            if (e.key === "ArrowRight") showNext();
+            if (e.key === "ArrowLeft") showLightboxPrev();
+            if (e.key === "ArrowRight") showLightboxNext();
         });
+    }
+
+    // ==================== 足迹地图（真实长三角手绘地图） ====================
+    function renderFootprintMap() {
+        const section = document.getElementById("footprintSection");
+        const mapWrap = document.getElementById("handdrawnMap");
+        const markersEl = document.getElementById("mapMarkers");
+        const tooltip = document.getElementById("mapTooltip");
+        const legendEl = document.getElementById("footprintLegend");
+        if (!section || !mapWrap || !markersEl || !tooltip || !legendEl) return;
+
+        const footprints = Array.isArray(CONFIG.footprints) ? CONFIG.footprints : [];
+        if (footprints.length === 0) {
+            section.style.display = "none";
+            return;
+        }
+
+        const viewBoxWidth = 800;
+        const viewBoxHeight = 600;
+        const minLng = 119.0;
+        const maxLng = 122.3;
+        const minLat = 30.0;
+        const maxLat = 32.5;
+
+        function lngToX(lng) {
+            return ((lng - minLng) / (maxLng - minLng)) * viewBoxWidth;
+        }
+
+        function latToY(lat) {
+            return viewBoxHeight - ((lat - minLat) / (maxLat - minLat)) * viewBoxHeight;
+        }
+
+        // 可爱装饰符号定义
+        const defs = `
+            <defs>
+                <filter id="handDrawn" x="-20%" y="-20%" width="140%" height="140%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" />
+                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" />
+                </filter>
+                <symbol id="mapHeart" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </symbol>
+                <symbol id="mapStar" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </symbol>
+                <symbol id="mapSparkle" viewBox="0 0 24 24">
+                    <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z"/>
+                </symbol>
+            </defs>
+        `;
+
+        // 经纬网格
+        let gridLines = "";
+        for (let i = 1; i < 8; i++) {
+            const x = (viewBoxWidth / 8) * i;
+            gridLines += `<line class="map-grid" x1="${x}" y1="0" x2="${x}" y2="${viewBoxHeight}" />`;
+        }
+        for (let i = 1; i < 6; i++) {
+            const y = (viewBoxHeight / 6) * i;
+            gridLines += `<line class="map-grid" x1="0" y1="${y}" x2="${viewBoxWidth}" y2="${y}" />`;
+        }
+
+        // 真实长三角地理轮廓（高精度、可爱装饰）
+        const landPaths = `
+            <g class="map-land">
+                <!-- 陆地背景 -->
+                <path class="landmass" d="M 120 260 C 170 235, 240 218, 310 212 C 380 206, 450 218, 505 232 C 550 243, 585 230, 620 210 C 655 190, 680 172, 715 168 C 750 164, 775 185, 785 215 C 792 250, 788 290, 780 325 C 770 370, 748 410, 715 445 C 675 485, 625 510, 570 518 C 510 526, 450 520, 400 505 C 350 490, 310 465, 280 435 C 250 405, 230 375, 215 350 C 195 318, 175 295, 150 280 C 135 270, 125 265, 120 260 Z" />
+                <!-- 海岸线 -->
+                <path class="coast" d="M 120 260 C 170 235, 240 218, 310 212 C 380 206, 450 218, 505 232 C 550 243, 585 230, 620 210 C 655 190, 680 172, 715 168 C 750 164, 775 185, 785 215 C 792 250, 788 290, 780 325 C 770 370, 748 410, 715 445 C 675 485, 625 510, 570 518 C 510 526, 450 520, 400 505 C 350 490, 310 465, 280 435 C 250 405, 230 375, 215 350 C 195 318, 175 295, 150 280 C 135 270, 125 265, 120 260" />
+                <!-- 长江 -->
+                <path class="river" d="M 115 248 C 180 244, 260 240, 340 236 C 420 232, 500 225, 565 210 C 630 195, 685 182, 720 188 C 750 193, 770 208, 780 228 C 787 248, 790 270, 788 292" />
+                <!-- 长江南支 -->
+                <path class="river" d="M 545 210 C 580 220, 620 228, 655 238 C 685 248, 710 260, 730 275" />
+                <!-- 太湖 -->
+                <path class="taihu" d="M 255 305 C 285 292, 320 288, 350 295 C 380 302, 398 322, 402 348 C 405 375, 392 398, 370 410 C 342 423, 308 423, 285 414 C 262 404, 248 382, 245 360 C 242 335, 248 315, 255 305 Z" />
+                <!-- 崇明岛 -->
+                <path class="chongming" d="M 545 175 C 585 166, 630 164, 660 169 C 678 172, 684 188, 678 203 C 662 214, 630 218, 600 216 C 578 214, 558 208, 550 196 C 546 186, 545 180, 545 175 Z" />
+                <!-- 黄浦江 -->
+                <path class="huangpu" d="M 470 460 C 500 438, 535 414, 575 392 C 605 375, 628 358, 642 340 C 655 322, 665 305, 670 285 C 675 270, 675 255, 670 240" />
+                <!-- 东海小岛 -->
+                <path class="island" d="M 705 340 C 712 337, 720 339, 724 344 C 728 350, 724 356, 716 358 C 708 359, 702 355, 700 350 C 699 345, 701 342, 705 340 Z" />
+                <path class="island" d="M 735 300 C 742 298, 750 300, 752 306 C 754 312, 750 317, 743 318 C 736 318, 731 314, 730 309 C 729 304, 731 301, 735 300 Z" />
+            </g>
+            <g class="map-decorations">
+                <!-- 海面上的可爱装饰 -->
+                <use class="deco-heart" href="#mapHeart" x="700" y="70" width="16" height="16" style="animation-delay: 0s" />
+                <use class="deco-heart" href="#mapHeart" x="760" y="140" width="14" height="14" style="animation-delay: 1.2s" />
+                <use class="deco-heart" href="#mapHeart" x="670" y="110" width="12" height="12" style="animation-delay: 2.4s" />
+                <use class="deco-star" href="#mapStar" x="730" y="55" width="12" height="12" style="animation-delay: 0.5s" />
+                <use class="deco-star" href="#mapStar" x="690" y="150" width="10" height="10" style="animation-delay: 1.7s" />
+                <use class="deco-sparkle" href="#mapSparkle" x="750" y="90" width="10" height="10" style="animation-delay: 0.8s" />
+                <!-- 指南针 -->
+                <g class="map-compass" transform="translate(720, 80)">
+                    <circle cx="20" cy="20" r="18" />
+                    <path d="M20 6 L24 20 L20 34 L16 20 Z" />
+                    <text x="20" y="4" text-anchor="middle" font-size="8" fill="#C9A689">N</text>
+                </g>
+            </g>
+            <g class="map-labels">
+                <text class="map-label" x="315" y="365" text-anchor="middle">太湖</text>
+                <text class="map-label" x="605" y="192" text-anchor="middle">崇明岛</text>
+                <text class="map-label" x="750" y="265" text-anchor="middle" transform="rotate(30, 750, 265)">长江口</text>
+                <text class="map-label" x="655" y="285" text-anchor="middle">上海</text>
+            </g>
+        `;
+
+        const baseSvg = mapWrap.querySelector(".map-base");
+        if (baseSvg) {
+            baseSvg.innerHTML = `${defs}${gridLines}${landPaths}`;
+        }
+
+        // 轨迹线：按顺序连接真实坐标
+        const routePoints = footprints.map(f => ({
+            x: lngToX(f.lng),
+            y: latToY(f.lat)
+        }));
+
+        let routeD = "";
+        routePoints.forEach((p, i) => {
+            if (i === 0) {
+                routeD += `M ${p.x} ${p.y}`;
+            } else {
+                const prev = routePoints[i - 1];
+                const cp1x = prev.x + (p.x - prev.x) * 0.35 + (Math.random() - 0.5) * 12;
+                const cp1y = prev.y + (p.y - prev.y) * 0.35 + (Math.random() - 0.5) * 12;
+                const cp2x = prev.x + (p.x - prev.x) * 0.65 + (Math.random() - 0.5) * 12;
+                const cp2y = prev.y + (p.y - prev.y) * 0.65 + (Math.random() - 0.5) * 12;
+                routeD += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p.x} ${p.y}`;
+            }
+        });
+
+        const routeSvg = mapWrap.querySelector(".map-route");
+        if (routeSvg) {
+            const routeHearts = routePoints.map((p, i) => `
+                <use class="route-heart" href="#mapHeart" x="${p.x - 5}" y="${p.y - 5}" width="10" height="10" style="animation-delay: ${i * 0.4}s" />
+            `).join("");
+            routeSvg.innerHTML = `<path class="route-line" d="${routeD}" />${routeHearts}`;
+        }
+
+        // 地标标记（按真实经纬度百分比定位）
+        const iconColors = {
+            "🌸": "#ff85a2",
+            "🏠": "#f1c40f",
+            "🌿": "#7cb342",
+            "🎡": "#e74c3c",
+            "📚": "#5b7cfa"
+        };
+
+        markersEl.innerHTML = footprints.map((f, i) => {
+            const color = iconColors[f.icon] || "#e06c9f";
+            const left = ((f.lng - minLng) / (maxLng - minLng)) * 100;
+            const top = 100 - ((f.lat - minLat) / (maxLat - minLat)) * 100;
+            const isCurrent = i === footprints.length - 1;
+            return `
+                <div class="map-marker ${isCurrent ? 'current' : ''}" data-index="${i}" style="left: ${left}%; top: ${top}%; color: ${color};" role="button" aria-label="${f.city}">
+                    <span class="marker-pulse"></span>
+                    ${isCurrent ? '<span class="marker-star">✨</span>' : ''}
+                    <span class="marker-icon">${f.icon}</span>
+                </div>
+            `;
+        }).join("");
+
+        // 底部图例
+        legendEl.innerHTML = footprints.map((f, i) => `
+            <span class="legend-item" data-index="${i}">
+                <span class="legend-icon">${f.icon}</span>
+                <span>${f.shortName || f.city}</span>
+            </span>
+        `).join("");
+
+        // Tooltip 交互
+        let activeMarker = null;
+
+        function showTooltip(marker, data) {
+            const rect = marker.getBoundingClientRect();
+            const wrapRect = mapWrap.getBoundingClientRect();
+            const nameEl = tooltip.querySelector(".tooltip-name");
+            const timeEl = tooltip.querySelector(".tooltip-time");
+            if (nameEl) nameEl.textContent = data.city;
+            if (timeEl) timeEl.textContent = `回忆时间：${data.date}`;
+
+            const left = rect.left - wrapRect.left + rect.width / 2;
+            const top = rect.top - wrapRect.top - 8;
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+            tooltip.classList.add("visible");
+
+            if (activeMarker) activeMarker.classList.remove("active");
+            marker.classList.add("active");
+            activeMarker = marker;
+        }
+
+        function hideTooltip() {
+            tooltip.classList.remove("visible");
+            if (activeMarker) {
+                activeMarker.classList.remove("active");
+                activeMarker = null;
+            }
+        }
+
+        markersEl.querySelectorAll(".map-marker").forEach((marker, i) => {
+            marker.addEventListener("mouseenter", () => showTooltip(marker, footprints[i]));
+            marker.addEventListener("mouseleave", () => {
+                if (!marker.classList.contains("locked")) hideTooltip();
+            });
+            marker.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const isLocked = marker.classList.contains("locked");
+                markersEl.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
+                if (!isLocked) {
+                    marker.classList.add("locked");
+                    showTooltip(marker, footprints[i]);
+                } else {
+                    hideTooltip();
+                }
+            });
+        });
+
+        legendEl.querySelectorAll(".legend-item").forEach((item, i) => {
+            item.addEventListener("click", () => {
+                const marker = markersEl.querySelector(`.map-marker[data-index="${i}"]`);
+                if (marker) {
+                    markersEl.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
+                    marker.classList.add("locked");
+                    showTooltip(marker, footprints[i]);
+                }
+            });
+        });
+
+        mapWrap.addEventListener("click", (e) => {
+            if (!e.target.closest(".map-marker") && !e.target.closest(".footprint-legend")) {
+                markersEl.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
+                hideTooltip();
+            }
+        });
+
+        // 卡片入场动画
+        const card = section.querySelector(".footprint-card");
+        if (card) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+            observer.observe(card);
+        }
     }
 
     // ==================== 她对我的意义 ====================
@@ -939,11 +1209,18 @@
         if (subtitle) subtitle.textContent = birthdayConfig.subtitle || "点击蜡烛，一起许愿吧";
 
         // 生日页进入视口时添加 visible 类，触发标题入场动画
+        // 同时监听进入/离开，自动切换生日音乐
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add("visible");
-                    sectionObserver.unobserve(entry.target);
+                    if (typeof window.switchBirthdayMusic === "function") {
+                        window.switchBirthdayMusic();
+                    }
+                } else {
+                    if (typeof window.switchMainMusic === "function") {
+                        window.switchMainMusic();
+                    }
                 }
             });
         }, { threshold: 0.25 });
@@ -971,7 +1248,7 @@
                     clearInterval(timer);
                     typewriter.classList.add("done");
                 }
-            }, 55);
+            }, 70);
         }
 
         function onAllCandlesOut() {
@@ -990,11 +1267,6 @@
             // 触发烟花
             if (typeof window.startBirthdayFireworks === "function") {
                 window.startBirthdayFireworks();
-            }
-
-            // 生日页音乐切换
-            if (typeof window.switchBirthdayMusic === "function") {
-                window.switchBirthdayMusic();
             }
         }
 
@@ -1205,43 +1477,92 @@
             return;
         }
 
-        audio.src = mainSrc || birthdaySrc;
+        audio.loop = true;
+
         let isPlaying = false;
-        let currentSrc = audio.src;
+        let currentSrc = "";
         let birthdayMode = false;
+        let autoPlayFired = false;
+
+        function updateButtonState() {
+            if (isPlaying) {
+                btn.classList.add("playing");
+            } else {
+                btn.classList.remove("playing");
+            }
+        }
 
         function play() {
+            if (!audio.src) return;
             audio.play().then(() => {
-                btn.classList.add("playing");
                 isPlaying = true;
+                updateButtonState();
             }).catch(err => {
-                console.warn("音乐自动播放被阻止，请点击按钮手动播放", err);
+                // 浏览器自动播放策略阻止，静默处理，等待用户交互后再试
+                isPlaying = false;
+                updateButtonState();
+                console.warn("音乐自动播放被阻止，将在首次交互后尝试播放", err);
             });
         }
 
         function switchTo(src) {
             if (!src || currentSrc === src) return;
-            const wasPlaying = isPlaying;
             audio.src = src;
             currentSrc = src;
-            if (wasPlaying) {
+            play();
+        }
+
+        function initMainMusic() {
+            if (mainSrc) {
+                audio.src = mainSrc;
+                currentSrc = mainSrc;
+                play();
+            } else if (birthdaySrc) {
+                audio.src = birthdaySrc;
+                currentSrc = birthdaySrc;
                 play();
             }
         }
 
+        // 首次用户交互时尝试自动播放（用于绕过浏览器自动播放限制）
+        function tryAutoPlayOnInteraction() {
+            if (autoPlayFired) return;
+            autoPlayFired = true;
+            if (!isPlaying) {
+                initMainMusic();
+            }
+        }
+
+        // 监听各类首次用户交互，只触发一次
+        const interactionEvents = ["click", "touchstart", "scroll", "keydown"];
+        interactionEvents.forEach(evt => {
+            document.addEventListener(evt, tryAutoPlayOnInteraction, { once: true, passive: true });
+        });
+
+        // 页面加载后立刻尝试播放主音乐
+        initMainMusic();
+
         btn.addEventListener("click", () => {
             if (isPlaying) {
                 audio.pause();
-                btn.classList.remove("playing");
-                isPlaying = false;
             } else {
                 play();
             }
         });
 
+        audio.addEventListener("play", () => {
+            isPlaying = true;
+            updateButtonState();
+        });
+
+        audio.addEventListener("pause", () => {
+            isPlaying = false;
+            updateButtonState();
+        });
+
         audio.addEventListener("ended", () => {
             isPlaying = false;
-            btn.classList.remove("playing");
+            updateButtonState();
         });
 
         // 暴露给生日页：切换到生日音乐
@@ -1253,7 +1574,7 @@
             }
         };
 
-        // 离开生日页时切回主音乐（可选）
+        // 离开生日页时切回主音乐
         window.switchMainMusic = function () {
             if (!birthdayMode) return;
             birthdayMode = false;
@@ -1265,7 +1586,7 @@
 
     // ==================== 点击飘爱心 ====================
     function initClickHearts() {
-        const hearts = ["💕", "💖", "💗", "💓", "🌟", "✨"];
+        const hearts = ["💕", "💖"];
         document.addEventListener("click", (e) => {
             // 避免点击按钮、链接、画廊时触发
             if (e.target.closest("button, a, .gallery-item, .lightbox-nav, .lightbox-close")) return;
@@ -1275,9 +1596,9 @@
             heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
             heart.style.left = `${e.clientX}px`;
             heart.style.top = `${e.clientY}px`;
-            heart.style.setProperty("--tx", `${(Math.random() - 0.5) * 60}px`);
-            heart.style.setProperty("--rot", `${(Math.random() - 0.5) * 40}deg`);
-            heart.style.fontSize = `${Math.random() * 0.8 + 1}rem`;
+            heart.style.setProperty("--tx", `${(Math.random() - 0.5) * 40}px`);
+            heart.style.setProperty("--rot", `${(Math.random() - 0.5) * 30}deg`);
+            heart.style.fontSize = `${Math.random() * 0.6 + 0.9}rem`;
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 1200);
         });
@@ -1286,7 +1607,9 @@
     // ==================== 初始化 ====================
     initStarfield();
     renderWall();
+    collectGalleryImages();
     renderGallery();
+    renderFootprintMap();
     renderTimeline();
     observeTimeline();
     initThemeObserver();

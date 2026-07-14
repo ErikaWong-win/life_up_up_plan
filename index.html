@@ -41,6 +41,42 @@
         </div>
     </section>
 
+    <!-- 双面情书 -->
+    <section class="love-letter-section" id="loveLetterSection">
+        <div class="love-letter-scene">
+            <div class="love-letter-card" id="loveLetterCard">
+                <div class="love-letter-face love-letter-front">
+                    <span class="letter-tag">我写给 TA</span>
+                    <h2 id="loveLetterTitleFront"></h2>
+                    <div class="typewriter" id="loveLetterContentFront"></div>
+                    <div class="letter-actions">
+                        <button class="replay-btn" id="replayFront" aria-label="重新播放">
+                            <span>↻</span> 再听一遍
+                        </button>
+                        <button class="flip-btn" id="flipToBack" aria-label="翻到背面">
+                            看看 TA 写给我的 <span>→</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="love-letter-face love-letter-back">
+                    <span class="letter-tag">TA 写给我</span>
+                    <h2 id="loveLetterTitleBack"></h2>
+                    <div class="typewriter" id="loveLetterContentBack"></div>
+                    <div class="letter-actions">
+                        <button class="replay-btn" id="replayBack" aria-label="重新播放">
+                            <span>↻</span> 再听一遍
+                        </button>
+                        <button class="flip-btn" id="flipToFront" aria-label="翻回正面">
+                            <span>←</span> 看看我写给 TA 的
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><span>•</span></div>
+
     <!-- 恋爱数据统计 -->
     <section class="stats-section" id="statsSection">
         <div class="stats-grid">
@@ -77,62 +113,62 @@
         </div>
     </section>
 
-    <!-- 双面情书 -->
-    <section class="love-letter-section" id="loveLetterSection">
-        <div class="love-letter-scene">
-            <div class="love-letter-card" id="loveLetterCard">
-                <div class="love-letter-face love-letter-front">
-                    <span class="letter-tag">我写给 TA</span>
-                    <h2 id="loveLetterTitleFront"></h2>
-                    <div class="typewriter" id="loveLetterContentFront"></div>
-                    <div class="letter-actions">
-                        <button class="replay-btn" id="replayFront" aria-label="重新播放">
-                            <span>↻</span> 再听一遍
-                        </button>
-                        <button class="flip-btn" id="flipToBack" aria-label="翻到背面">
-                            看看 TA 写给我的 <span>→</span>
-                        </button>
-                    </div>
+    <div class="section-divider"><span>•</span></div>
+
+    <!-- 足迹地图 -->
+    <section class="footprint-section" id="footprintSection">
+        <h2>我们的长三角回忆地图</h2>
+        <div class="footprint-card">
+            <div class="handdrawn-map" id="handdrawnMap">
+                <svg class="map-base" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+                    <!-- 底图由 JS 注入 -->
+                </svg>
+                <svg class="map-route" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+                    <!-- 轨迹线由 JS 注入 -->
+                </svg>
+                <div class="map-markers" id="mapMarkers">
+                    <!-- 地标由 JS 注入 -->
                 </div>
-                <div class="love-letter-face love-letter-back">
-                    <span class="letter-tag">TA 写给我</span>
-                    <h2 id="loveLetterTitleBack"></h2>
-                    <div class="typewriter" id="loveLetterContentBack"></div>
-                    <div class="letter-actions">
-                        <button class="replay-btn" id="replayBack" aria-label="重新播放">
-                            <span>↻</span> 再听一遍
-                        </button>
-                        <button class="flip-btn" id="flipToFront" aria-label="翻回正面">
-                            <span>←</span> 看看我写给 TA 的
-                        </button>
-                    </div>
+                <div class="map-tooltip" id="mapTooltip">
+                    <strong class="tooltip-name"></strong>
+                    <span class="tooltip-time"></span>
                 </div>
+            </div>
+            <div class="footprint-legend" id="footprintLegend">
+                <!-- 图例由 JS 注入 -->
             </div>
         </div>
     </section>
 
-    <div class="section-divider"><span>✨</span></div>
-
-    <!-- 回忆画廊 -->
-    <section class="gallery-section">
-        <h2>📸 我们的回忆碎片</h2>
-        <div class="gallery-grid" id="galleryGrid"></div>
-    </section>
-
-    <div class="section-divider"><span>💫</span></div>
+    <div class="section-divider"><span>•</span></div>
 
     <!-- 时间轴 -->
     <main class="timeline-section">
-        <h2>🌟 我们的恋爱时光轴</h2>
+        <h2>我们的恋爱时光轴</h2>
         <div class="timeline-wrap" id="timeline"></div>
     </main>
 
-    <div class="section-divider"><span>🎂</span></div>
+    <div class="section-divider"><span>•</span></div>
+
+    <!-- 回忆画廊 -->
+    <section class="gallery-section">
+        <h2>我们的回忆碎片</h2>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </section>
+
+    <div class="section-divider"><span>•</span></div>
 
     <!-- 她对我的意义 -->
     <section class="meaning-section" id="meaningSection">
-        <h2>💌 你对我来说</h2>
+        <h2>你对我来说</h2>
         <div class="meaning-grid" id="meaningGrid"></div>
+    </section>
+
+    <!-- 未来约定 -->
+    <section class="future-section" id="futureSection">
+        <h2>我们的未来约定</h2>
+        <div class="future-grid" id="futureGrid"></div>
+        <div class="next-milestone" id="nextMilestone"></div>
     </section>
 
     <!-- 生日过渡页 -->
@@ -200,13 +236,6 @@
 
         <!-- 烟花画布 -->
         <canvas class="fireworks" id="fireworks"></canvas>
-    </section>
-
-    <!-- 未来约定 -->
-    <section class="future-section" id="futureSection">
-        <h2>🌟 我们的未来约定</h2>
-        <div class="future-grid" id="futureGrid"></div>
-        <div class="next-milestone" id="nextMilestone"></div>
     </section>
 
     <footer>
