@@ -2416,6 +2416,45 @@ footer p {
     line-height: 1;
 }
 
+/* Leaflet 真实地图覆盖 */
+.leaflet-map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    border-radius: inherit;
+    background: #F9F6F0;
+}
+
+.leaflet-map .leaflet-tile {
+    filter: saturate(0.92) contrast(0.98);
+}
+
+.custom-leaflet-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.custom-leaflet-marker .map-marker {
+    position: relative;
+    width: clamp(44px, 6.5vw, 56px);
+    height: clamp(44px, 6.5vw, 56px);
+    transform: none;
+    left: auto;
+    top: auto;
+}
+
+/* 提高 tooltip 层级，确保在 Leaflet 控件之上 */
+.map-tooltip {
+    z-index: 1000;
+}
+
+/* 让 Leaflet 的 attribution 不显示（已由高德/Leaflet 提供，但保持页面简洁） */
+.leaflet-control-attribution {
+    display: none;
+}
+
 /* ==================== 板块分隔线 ==================== */
 .section-divider {
     display: flex;
@@ -2641,6 +2680,10 @@ footer p {
     .footprint-section h2 { font-size: 1.6rem; margin-bottom: 2rem; }
     .footprint-card { padding: 1rem; border-radius: var(--radius); }
     .handdrawn-map { border-radius: calc(var(--radius) - 0.25rem); }
+    .custom-leaflet-marker .map-marker {
+        width: 44px;
+        height: 44px;
+    }
     .map-tooltip { padding: 0.65rem 0.85rem; min-width: 130px; }
     .tooltip-name { font-size: 0.85rem; }
     .tooltip-time { font-size: 0.75rem; }

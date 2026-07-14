@@ -890,14 +890,13 @@
         });
     }
 
-    // ==================== 足迹地图（真实长三角手绘地图） ====================
+    // ==================== 足迹地图（Leaflet + 高德瓦片真实长三角地图） ====================
     function renderFootprintMap() {
         const section = document.getElementById("footprintSection");
         const mapWrap = document.getElementById("handdrawnMap");
-        const markersEl = document.getElementById("mapMarkers");
         const tooltip = document.getElementById("mapTooltip");
         const legendEl = document.getElementById("footprintLegend");
-        if (!section || !mapWrap || !markersEl || !tooltip || !legendEl) return;
+        if (!section || !mapWrap || !tooltip || !legendEl) return;
 
         const footprints = Array.isArray(CONFIG.footprints) ? CONFIG.footprints : [];
         if (footprints.length === 0) {
@@ -905,129 +904,55 @@
             return;
         }
 
-        const viewBoxWidth = 800;
-        const viewBoxHeight = 600;
-        const minLng = 119.0;
-        const maxLng = 122.3;
-        const minLat = 30.0;
-        const maxLat = 32.5;
-
-        function lngToX(lng) {
-            return ((lng - minLng) / (maxLng - minLng)) * viewBoxWidth;
+        // 等待 Leaflet 加载
+        if (typeof L === "undefined") {
+            console.warn("Leaflet 未加载，足迹地图将不可用");
+            section.style.display = "none";
+            return;
         }
 
-        function latToY(lat) {
-            return viewBoxHeight - ((lat - minLat) / (maxLat - minLat)) * viewBoxHeight;
-        }
-
-        // 可爱装饰符号定义
-        const defs = `
-            <defs>
-                <filter id="handDrawn" x="-20%" y="-20%" width="140%" height="140%">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" />
-                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" />
-                </filter>
-                <symbol id="mapHeart" viewBox="0 0 24 24">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </symbol>
-                <symbol id="mapStar" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </symbol>
-                <symbol id="mapSparkle" viewBox="0 0 24 24">
-                    <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z"/>
-                </symbol>
-            </defs>
-        `;
-
-        // 经纬网格
-        let gridLines = "";
-        for (let i = 1; i < 8; i++) {
-            const x = (viewBoxWidth / 8) * i;
-            gridLines += `<line class="map-grid" x1="${x}" y1="0" x2="${x}" y2="${viewBoxHeight}" />`;
-        }
-        for (let i = 1; i < 6; i++) {
-            const y = (viewBoxHeight / 6) * i;
-            gridLines += `<line class="map-grid" x1="0" y1="${y}" x2="${viewBoxWidth}" y2="${y}" />`;
-        }
-
-        // 真实长三角地理轮廓（高精度、可爱装饰）
-        const landPaths = `
-            <g class="map-land">
-                <!-- 陆地背景 -->
-                <path class="landmass" d="M 120 260 C 170 235, 240 218, 310 212 C 380 206, 450 218, 505 232 C 550 243, 585 230, 620 210 C 655 190, 680 172, 715 168 C 750 164, 775 185, 785 215 C 792 250, 788 290, 780 325 C 770 370, 748 410, 715 445 C 675 485, 625 510, 570 518 C 510 526, 450 520, 400 505 C 350 490, 310 465, 280 435 C 250 405, 230 375, 215 350 C 195 318, 175 295, 150 280 C 135 270, 125 265, 120 260 Z" />
-                <!-- 海岸线 -->
-                <path class="coast" d="M 120 260 C 170 235, 240 218, 310 212 C 380 206, 450 218, 505 232 C 550 243, 585 230, 620 210 C 655 190, 680 172, 715 168 C 750 164, 775 185, 785 215 C 792 250, 788 290, 780 325 C 770 370, 748 410, 715 445 C 675 485, 625 510, 570 518 C 510 526, 450 520, 400 505 C 350 490, 310 465, 280 435 C 250 405, 230 375, 215 350 C 195 318, 175 295, 150 280 C 135 270, 125 265, 120 260" />
-                <!-- 长江 -->
-                <path class="river" d="M 115 248 C 180 244, 260 240, 340 236 C 420 232, 500 225, 565 210 C 630 195, 685 182, 720 188 C 750 193, 770 208, 780 228 C 787 248, 790 270, 788 292" />
-                <!-- 长江南支 -->
-                <path class="river" d="M 545 210 C 580 220, 620 228, 655 238 C 685 248, 710 260, 730 275" />
-                <!-- 太湖 -->
-                <path class="taihu" d="M 255 305 C 285 292, 320 288, 350 295 C 380 302, 398 322, 402 348 C 405 375, 392 398, 370 410 C 342 423, 308 423, 285 414 C 262 404, 248 382, 245 360 C 242 335, 248 315, 255 305 Z" />
-                <!-- 崇明岛 -->
-                <path class="chongming" d="M 545 175 C 585 166, 630 164, 660 169 C 678 172, 684 188, 678 203 C 662 214, 630 218, 600 216 C 578 214, 558 208, 550 196 C 546 186, 545 180, 545 175 Z" />
-                <!-- 黄浦江 -->
-                <path class="huangpu" d="M 470 460 C 500 438, 535 414, 575 392 C 605 375, 628 358, 642 340 C 655 322, 665 305, 670 285 C 675 270, 675 255, 670 240" />
-                <!-- 东海小岛 -->
-                <path class="island" d="M 705 340 C 712 337, 720 339, 724 344 C 728 350, 724 356, 716 358 C 708 359, 702 355, 700 350 C 699 345, 701 342, 705 340 Z" />
-                <path class="island" d="M 735 300 C 742 298, 750 300, 752 306 C 754 312, 750 317, 743 318 C 736 318, 731 314, 730 309 C 729 304, 731 301, 735 300 Z" />
-            </g>
-            <g class="map-decorations">
-                <!-- 海面上的可爱装饰 -->
-                <use class="deco-heart" href="#mapHeart" x="700" y="70" width="16" height="16" style="animation-delay: 0s" />
-                <use class="deco-heart" href="#mapHeart" x="760" y="140" width="14" height="14" style="animation-delay: 1.2s" />
-                <use class="deco-heart" href="#mapHeart" x="670" y="110" width="12" height="12" style="animation-delay: 2.4s" />
-                <use class="deco-star" href="#mapStar" x="730" y="55" width="12" height="12" style="animation-delay: 0.5s" />
-                <use class="deco-star" href="#mapStar" x="690" y="150" width="10" height="10" style="animation-delay: 1.7s" />
-                <use class="deco-sparkle" href="#mapSparkle" x="750" y="90" width="10" height="10" style="animation-delay: 0.8s" />
-                <!-- 指南针 -->
-                <g class="map-compass" transform="translate(720, 80)">
-                    <circle cx="20" cy="20" r="18" />
-                    <path d="M20 6 L24 20 L20 34 L16 20 Z" />
-                    <text x="20" y="4" text-anchor="middle" font-size="8" fill="#C9A689">N</text>
-                </g>
-            </g>
-            <g class="map-labels">
-                <text class="map-label" x="315" y="365" text-anchor="middle">太湖</text>
-                <text class="map-label" x="605" y="192" text-anchor="middle">崇明岛</text>
-                <text class="map-label" x="750" y="265" text-anchor="middle" transform="rotate(30, 750, 265)">长江口</text>
-                <text class="map-label" x="655" y="285" text-anchor="middle">上海</text>
-            </g>
-        `;
-
-        const baseSvg = mapWrap.querySelector(".map-base");
-        if (baseSvg) {
-            baseSvg.innerHTML = `${defs}${gridLines}${landPaths}`;
-        }
-
-        // 轨迹线：按顺序连接真实坐标
-        const routePoints = footprints.map(f => ({
-            x: lngToX(f.lng),
-            y: latToY(f.lat)
-        }));
-
-        let routeD = "";
-        routePoints.forEach((p, i) => {
-            if (i === 0) {
-                routeD += `M ${p.x} ${p.y}`;
-            } else {
-                const prev = routePoints[i - 1];
-                const cp1x = prev.x + (p.x - prev.x) * 0.35 + (Math.random() - 0.5) * 12;
-                const cp1y = prev.y + (p.y - prev.y) * 0.35 + (Math.random() - 0.5) * 12;
-                const cp2x = prev.x + (p.x - prev.x) * 0.65 + (Math.random() - 0.5) * 12;
-                const cp2y = prev.y + (p.y - prev.y) * 0.65 + (Math.random() - 0.5) * 12;
-                routeD += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p.x} ${p.y}`;
-            }
+        // 初始化 Leaflet 地图
+        const map = L.map("leafletMap", {
+            zoomControl: false,
+            attributionControl: false,
+            scrollWheelZoom: false
         });
 
-        const routeSvg = mapWrap.querySelector(".map-route");
-        if (routeSvg) {
-            const routeHearts = routePoints.map((p, i) => `
-                <use class="route-heart" href="#mapHeart" x="${p.x - 5}" y="${p.y - 5}" width="10" height="10" style="animation-delay: ${i * 0.4}s" />
-            `).join("");
-            routeSvg.innerHTML = `<path class="route-line" d="${routeD}" />${routeHearts}`;
-        }
+        // 高德街道图瓦片（中国高精度底图）
+        const amapLayer = L.tileLayer(
+            "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+            {
+                subdomains: ["1", "2", "3", "4"],
+                maxZoom: 18,
+                minZoom: 3
+            }
+        ).addTo(map);
 
-        // 地标标记（按真实经纬度百分比定位）
+        // 瓦片加载失败时切换到 OpenStreetMap
+        amapLayer.on("tileerror", () => {
+            if (!map.hasLayer(amapLayer)) return;
+            map.removeLayer(amapLayer);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 18,
+                minZoom: 3
+            }).addTo(map);
+        });
+
+        // 上海及周边省市视野：聚焦上海 + 苏锡常杭嘉湖，同时保留 recognizable 的长三角上下文
+        const deltaBounds = L.latLngBounds([
+            [30.6, 120.6],
+            [31.9, 122.0]
+        ]);
+
+        // 足迹点边界
+        const latLngs = footprints.map(f => [f.lat, f.lng]);
+        const footprintBounds = L.latLngBounds(latLngs).pad(0.18);
+
+        // 合并边界：既要包含所有足迹点，也要展示上海及周边城市
+        const finalBounds = footprintBounds.extend(deltaBounds);
+        map.fitBounds(finalBounds, { padding: [40, 40], maxZoom: 11 });
+
+        // 图标颜色
         const iconColors = {
             "🌸": "#ff85a2",
             "🏠": "#f1c40f",
@@ -1036,21 +961,62 @@
             "📚": "#5b7cfa"
         };
 
-        markersEl.innerHTML = footprints.map((f, i) => {
+        const markers = [];
+
+        footprints.forEach((f, i) => {
             const color = iconColors[f.icon] || "#e06c9f";
-            const left = ((f.lng - minLng) / (maxLng - minLng)) * 100;
-            const top = 100 - ((f.lat - minLat) / (maxLat - minLat)) * 100;
             const isCurrent = i === footprints.length - 1;
-            return `
-                <div class="map-marker ${isCurrent ? 'current' : ''}" data-index="${i}" style="left: ${left}%; top: ${top}%; color: ${color};" role="button" aria-label="${f.city}">
+            const iconHtml = `
+                <div class="map-marker ${isCurrent ? "current" : ""}" data-index="${i}" style="color: ${color};">
                     <span class="marker-pulse"></span>
-                    ${isCurrent ? '<span class="marker-star">✨</span>' : ''}
+                    ${isCurrent ? '<span class="marker-star">✨</span>' : ""}
                     <span class="marker-icon">${f.icon}</span>
                 </div>
             `;
-        }).join("");
+            const icon = L.divIcon({
+                html: iconHtml,
+                className: "custom-leaflet-marker",
+                iconSize: [56, 56],
+                iconAnchor: [28, 28]
+            });
+            const marker = L.marker([f.lat, f.lng], { icon }).addTo(map);
+            markers.push(marker);
 
-        // 底部图例
+            // 绑定自定义交互
+            const el = marker.getElement();
+            if (el) {
+                const markerInner = el.querySelector(".map-marker");
+                if (markerInner) {
+                    markerInner.addEventListener("mouseenter", () => showTooltip(markerInner, f));
+                    markerInner.addEventListener("mouseleave", () => {
+                        if (!markerInner.classList.contains("locked")) hideTooltip();
+                    });
+                    markerInner.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        const isLocked = markerInner.classList.contains("locked");
+                        mapWrap.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
+                        if (!isLocked) {
+                            markerInner.classList.add("locked");
+                            showTooltip(markerInner, f);
+                        } else {
+                            hideTooltip();
+                        }
+                    });
+                }
+            }
+        });
+
+        // 绘制足迹路线
+        L.polyline(latLngs, {
+            color: "#FF9EB5",
+            weight: 3.2,
+            opacity: 0.95,
+            dashArray: "7 5",
+            lineCap: "round",
+            lineJoin: "round"
+        }).addTo(map);
+
+        // 图例
         legendEl.innerHTML = footprints.map((f, i) => `
             <span class="legend-item" data-index="${i}">
                 <span class="legend-icon">${f.icon}</span>
@@ -1058,11 +1024,8 @@
             </span>
         `).join("");
 
-        // Tooltip 交互
-        let activeMarker = null;
-
-        function showTooltip(marker, data) {
-            const rect = marker.getBoundingClientRect();
+        function showTooltip(markerEl, data) {
+            const rect = markerEl.getBoundingClientRect();
             const wrapRect = mapWrap.getBoundingClientRect();
             const nameEl = tooltip.querySelector(".tooltip-name");
             const timeEl = tooltip.querySelector(".tooltip-time");
@@ -1075,51 +1038,47 @@
             tooltip.style.top = `${top}px`;
             tooltip.classList.add("visible");
 
-            if (activeMarker) activeMarker.classList.remove("active");
-            marker.classList.add("active");
-            activeMarker = marker;
+            mapWrap.querySelectorAll(".map-marker.active").forEach(m => m.classList.remove("active"));
+            markerEl.classList.add("active");
         }
 
         function hideTooltip() {
             tooltip.classList.remove("visible");
-            if (activeMarker) {
-                activeMarker.classList.remove("active");
-                activeMarker = null;
-            }
+            mapWrap.querySelectorAll(".map-marker.active").forEach(m => m.classList.remove("active"));
         }
-
-        markersEl.querySelectorAll(".map-marker").forEach((marker, i) => {
-            marker.addEventListener("mouseenter", () => showTooltip(marker, footprints[i]));
-            marker.addEventListener("mouseleave", () => {
-                if (!marker.classList.contains("locked")) hideTooltip();
-            });
-            marker.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const isLocked = marker.classList.contains("locked");
-                markersEl.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
-                if (!isLocked) {
-                    marker.classList.add("locked");
-                    showTooltip(marker, footprints[i]);
-                } else {
-                    hideTooltip();
-                }
-            });
-        });
 
         legendEl.querySelectorAll(".legend-item").forEach((item, i) => {
             item.addEventListener("click", () => {
-                const marker = markersEl.querySelector(`.map-marker[data-index="${i}"]`);
-                if (marker) {
-                    markersEl.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
-                    marker.classList.add("locked");
-                    showTooltip(marker, footprints[i]);
+                const marker = markers[i];
+                if (!marker) return;
+                const el = marker.getElement();
+                const markerInner = el ? el.querySelector(".map-marker") : null;
+                if (markerInner) {
+                    mapWrap.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
+                    markerInner.classList.add("locked");
+                    showTooltip(markerInner, footprints[i]);
+                    map.flyTo([footprints[i].lat, footprints[i].lng], Math.max(map.getZoom(), 11), {
+                        duration: 1.2
+                    });
                 }
             });
         });
 
-        mapWrap.addEventListener("click", (e) => {
-            if (!e.target.closest(".map-marker") && !e.target.closest(".footprint-legend")) {
-                markersEl.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
+        // 点击地图空白处取消锁定
+        map.on("click", () => {
+            mapWrap.querySelectorAll(".map-marker.locked").forEach(m => m.classList.remove("locked"));
+            hideTooltip();
+        });
+
+        // 地图视图变化时更新锁定 tooltip 位置
+        map.on("move zoom", () => {
+            const locked = mapWrap.querySelector(".map-marker.locked");
+            if (locked) {
+                const index = parseInt(locked.dataset.index, 10);
+                if (!isNaN(index) && footprints[index]) {
+                    showTooltip(locked, footprints[index]);
+                }
+            } else {
                 hideTooltip();
             }
         });
@@ -1131,6 +1090,7 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add("visible");
+                        setTimeout(() => map.invalidateSize(), 50);
                         observer.unobserve(entry.target);
                     }
                 });
