@@ -47,6 +47,8 @@
     --theme-sakura-glow: rgba(201, 139, 159, 0.35);
     --theme-tianzifang: #b5866b;
     --theme-tianzifang-glow: rgba(181, 134, 107, 0.35);
+    --theme-graduation: #4a6fa5;
+    --theme-graduation-glow: rgba(74, 111, 165, 0.35);
 }
 
 html {
@@ -452,6 +454,7 @@ body[data-active-theme="tianzifang"] .theme-transition-layer {
 .theme-chapter[data-theme="disney"] { --theme-color: var(--theme-disney); --theme-glow: var(--theme-disney-glow); }
 .theme-chapter[data-theme="sakura"] { --theme-color: var(--theme-sakura); --theme-glow: var(--theme-sakura-glow); }
 .theme-chapter[data-theme="tianzifang"] { --theme-color: var(--theme-tianzifang); --theme-glow: var(--theme-tianzifang-glow); }
+.theme-chapter[data-theme="graduation"] { --theme-color: var(--theme-graduation); --theme-glow: var(--theme-graduation-glow); }
 
 .theme-chapter .chapter-glow {
     position: absolute;
@@ -524,6 +527,9 @@ body[data-active-theme="tianzifang"] .theme-transition-layer {
 .theme-chapter[data-theme="tianzifang"]::after {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M10 40 L10 20 L30 20 L30 40 M90 40 L90 15 L110 15 L110 40' stroke='%23ff9f5a' stroke-width='2' fill='none'/%3E%3C/svg%3E");
 }
+.theme-chapter[data-theme="graduation"]::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Cpath d='M60 8 L20 22 L60 36 L100 22 Z M60 36 L60 30 M40 25 L40 32 Q60 40 80 32 L80 25' stroke='%234a6fa5' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+}
 
 /* 主题徽章 */
 .theme-badge {
@@ -557,6 +563,7 @@ body[data-active-theme="tianzifang"] .theme-transition-layer {
 .timeline[data-theme="disney"] { --theme-color: var(--theme-disney); --theme-glow: var(--theme-disney-glow); }
 .timeline[data-theme="sakura"] { --theme-color: var(--theme-sakura); --theme-glow: var(--theme-sakura-glow); }
 .timeline[data-theme="tianzifang"] { --theme-color: var(--theme-tianzifang); --theme-glow: var(--theme-tianzifang-glow); }
+.timeline[data-theme="graduation"] { --theme-color: var(--theme-graduation); --theme-glow: var(--theme-graduation-glow); }
 
 .timeline::before {
     content: "";
@@ -596,6 +603,7 @@ body[data-active-theme="tianzifang"] .theme-transition-layer {
 .timeline-item[data-theme="disney"] { --theme-color: var(--theme-disney); --theme-glow: var(--theme-disney-glow); }
 .timeline-item[data-theme="sakura"] { --theme-color: var(--theme-sakura); --theme-glow: var(--theme-sakura-glow); }
 .timeline-item[data-theme="tianzifang"] { --theme-color: var(--theme-tianzifang); --theme-glow: var(--theme-tianzifang-glow); }
+.timeline-item[data-theme="graduation"] { --theme-color: var(--theme-graduation); --theme-glow: var(--theme-graduation-glow); }
 
 .timeline-item.visible {
     opacity: 1;
@@ -2091,328 +2099,201 @@ footer p {
     display: block;
 }
 
-.map-base {
-    z-index: 1;
-}
-
-.map-route {
-    z-index: 2;
-    pointer-events: none;
-}
-
-.map-grid {
-    stroke: rgba(160, 160, 160, 0.12);
-    stroke-width: 1;
-    stroke-dasharray: 3 8;
-}
-
-.map-land {
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.map-land .landmass {
-    fill: rgba(141, 110, 99, 0.06);
-    stroke: none;
-}
-
-.map-land .coast {
-    stroke: #7A5C52;
-    stroke-width: 2.8;
-    filter: drop-shadow(0 1px 2px rgba(122, 92, 82, 0.12));
-}
-
-.map-land .river {
-    stroke: #8BAAB8;
-    stroke-width: 2.2;
-    stroke-dasharray: 5 4 2 5;
-    opacity: 0.85;
-}
-
-.map-land .taihu {
-    stroke: #9BB8C2;
-    stroke-width: 1.8;
-    fill: rgba(168, 196, 204, 0.22);
-}
-
-.map-land .chongming {
-    stroke: #7A5C52;
-    stroke-width: 2;
-    fill: #F9F6F0;
-}
-
-.map-land .huangpu {
-    stroke: #8BAAB8;
-    stroke-width: 1.8;
-    stroke-dasharray: 4 3;
-    opacity: 0.8;
-}
-
-.map-land .island {
-    stroke: #7A5C52;
-    stroke-width: 1.5;
-    fill: #F9F6F0;
-}
-
-.map-decorations {
-    pointer-events: none;
-}
-
-.deco-heart {
-    fill: #FFB7C5;
-    opacity: 0.55;
-    animation: floatHeart 4s ease-in-out infinite;
-    transform-origin: center;
-}
-
-.deco-star {
-    fill: #FFD966;
-    opacity: 0.7;
-    animation: twinkle 2.5s ease-in-out infinite;
-    transform-origin: center;
-}
-
-.deco-sparkle {
-    fill: #FFD966;
-    opacity: 0.65;
-    animation: sparkleRotate 3s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes floatHeart {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-6px) scale(1.12); }
-}
-
-@keyframes twinkle {
-    0%, 100% { opacity: 0.4; transform: scale(0.85); }
-    50% { opacity: 1; transform: scale(1.15); }
-}
-
-@keyframes sparkleRotate {
-    0%, 100% { opacity: 0.4; transform: scale(0.8) rotate(0deg); }
-    50% { opacity: 1; transform: scale(1.1) rotate(18deg); }
-}
-
-.map-compass {
-    fill: none;
-    stroke: #C9A689;
-    stroke-width: 1.5;
-    opacity: 0.55;
-}
-
-.map-compass path {
-    fill: rgba(201, 166, 137, 0.15);
-}
-
-.map-labels {
-    pointer-events: none;
-}
-
-.map-label {
-    font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", serif;
-    font-size: clamp(10px, 1.4vw, 13px);
-    fill: #9E8376;
-    opacity: 0.75;
-    font-weight: 500;
-}
-
-.route-line {
-    fill: none;
-    stroke: #FF9EB5;
-    stroke-width: 3.2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 7 5;
-    filter: drop-shadow(0 1px 3px rgba(255, 158, 181, 0.35));
-    opacity: 0.95;
-}
-
-.route-heart {
-    fill: #FF85A2;
-    filter: drop-shadow(0 1px 2px rgba(255, 133, 162, 0.35));
-    animation: routeHeartBeat 2s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes routeHeartBeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-}
-
-.map-markers {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-}
-
 .map-marker {
-    position: absolute;
-    width: clamp(48px, 6.5vw, 68px);
-    height: clamp(48px, 6.5vw, 68px);
-    transform: translate(-50%, -50%);
+    position: relative;
+    width: 44px;
+    height: 54px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     cursor: pointer;
     z-index: 4;
-    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.1));
+    transform-origin: bottom center;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
+}
+
+.map-marker:hover,
+.map-marker.active {
+    transform: translateY(-4px) scale(1.08);
+    z-index: 10;
+}
+
+.marker-pin {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker-pin svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+}
+
+.marker-pin .pin-shape {
+    fill: var(--marker-color);
+    stroke: rgba(255, 255, 255, 0.9);
+    stroke-width: 1.5;
+    transition: filter 0.3s ease;
+}
+
+.marker-pin .pin-dot {
+    fill: rgba(255, 255, 255, 0.95);
 }
 
 .marker-icon {
     position: relative;
     z-index: 2;
-    font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+    font-size: 1.15rem;
     line-height: 1;
-    text-shadow:
-        0 0 8px rgba(255, 255, 255, 0.9),
-        0 0 2px rgba(255, 255, 255, 0.9);
+    margin-top: -18px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .map-marker:hover .marker-icon,
 .map-marker.active .marker-icon {
-    transform: scale(1.25) translateY(-3px);
+    transform: scale(1.15);
 }
 
-.map-marker.current .marker-icon {
-    filter: drop-shadow(0 0 10px rgba(255, 217, 102, 0.55));
+.map-marker.current .marker-pin .pin-shape {
+    filter: drop-shadow(0 0 10px var(--marker-color));
 }
 
 .marker-star {
     position: absolute;
-    top: -6px;
+    top: -2px;
     right: -2px;
-    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    font-size: 0.85rem;
     line-height: 1;
     animation: starBlink 1.8s ease-in-out infinite;
-    z-index: 3;
+    z-index: 5;
     filter: drop-shadow(0 1px 2px rgba(255, 217, 102, 0.4));
 }
 
 @keyframes starBlink {
-    0%, 100% { opacity: 0.6; transform: scale(0.9) rotate(-10deg); }
-    50% { opacity: 1; transform: scale(1.25) rotate(10deg); }
+    0%, 100% { opacity: 0.7; transform: scale(0.95) rotate(-10deg); }
+    50% { opacity: 1; transform: scale(1.15) rotate(10deg); }
 }
 
 .marker-pulse {
     position: absolute;
-    inset: 0;
+    bottom: 0;
+    left: 50%;
+    width: 12px;
+    height: 6px;
+    transform: translate(-50%, 50%);
     border-radius: 50%;
-    background: currentColor;
-    opacity: 0.18;
+    background: var(--marker-color);
+    opacity: 0.35;
     z-index: 1;
-    animation: markerPulse 2.8s ease-out infinite;
+    animation: pinPulse 2.4s ease-out infinite;
     pointer-events: none;
 }
 
-.marker-pulse::after {
-    content: "";
-    position: absolute;
-    inset: -8px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-    opacity: 0.28;
-    animation: markerPulse 2.8s ease-out infinite;
-    animation-delay: 0.5s;
-}
-
-@keyframes markerPulse {
-    0% { transform: scale(0.55); opacity: 0.45; }
-    100% { transform: scale(1.9); opacity: 0; }
+@keyframes pinPulse {
+    0% { transform: translate(-50%, 50%) scale(1); opacity: 0.35; }
+    100% { transform: translate(-50%, 50%) scale(3.5); opacity: 0; }
 }
 
 .map-tooltip {
     position: absolute;
-    z-index: 10;
-    min-width: 150px;
-    max-width: 240px;
+    z-index: 1000;
+    min-width: 140px;
+    max-width: 220px;
     background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
-    border-radius: 1rem;
-    padding: 0.8rem 1.1rem;
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    border-radius: 0.85rem;
+    padding: 0.75rem 1rem;
     box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.06),
-        0 0 0 1px rgba(255, 158, 200, 0.25),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+        0 10px 28px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, -90%);
-    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translate(-50%, -92%);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     text-align: center;
 }
 
 .map-tooltip::before {
-    content: "♥";
+    content: "";
     position: absolute;
-    top: -10px;
+    top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #FFF;
-    border-radius: 50%;
-    color: #FF85A2;
-    font-size: 10px;
-    box-shadow: 0 2px 6px rgba(255, 133, 162, 0.25);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(255, 255, 255, 0.96);
 }
 
 .map-tooltip.visible {
     opacity: 1;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -102%);
 }
 
 .tooltip-name {
     display: block;
+    font-family: "Noto Serif SC", "Source Han Serif SC", serif;
     font-size: clamp(0.85rem, 2vw, 0.95rem);
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
     line-height: 1.4;
 }
 
 .tooltip-time {
     display: block;
-    font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+    font-size: clamp(0.7rem, 1.6vw, 0.8rem);
     color: var(--text-light);
-    font-family: "Courier New", Courier, monospace;
+    letter-spacing: 0.02em;
 }
 
 .footprint-legend {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.6rem 1rem;
+    gap: 0.5rem 1.4rem;
     margin-top: 1.6rem;
 }
 
 .legend-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    gap: 0.45rem;
+    font-size: clamp(0.78rem, 1.8vw, 0.88rem);
     color: var(--text);
-    background: rgba(255, 255, 255, 0.75);
-    padding: 0.4rem 0.9rem;
-    border-radius: 2rem;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 158, 200, 0.15);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    padding: 0.25rem 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
     cursor: pointer;
+    opacity: 0.85;
 }
 
 .legend-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 158, 200, 0.15);
+    opacity: 1;
+    transform: translateY(-1px);
 }
 
 .legend-icon {
-    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 0 3px currentColor;
+    font-size: 0;
     line-height: 1;
 }
 
@@ -2428,7 +2309,7 @@ footer p {
 }
 
 .leaflet-map .leaflet-tile {
-    filter: saturate(0.92) contrast(0.98);
+    filter: grayscale(0.35) sepia(0.12) saturate(0.7) contrast(0.92) brightness(1.05);
 }
 
 .custom-leaflet-marker {
@@ -2436,21 +2317,16 @@ footer p {
     border: none !important;
 }
 
-.custom-leaflet-marker .map-marker {
-    position: relative;
-    width: clamp(44px, 6.5vw, 56px);
-    height: clamp(44px, 6.5vw, 56px);
-    transform: none;
-    left: auto;
-    top: auto;
+/* 足迹路线流动动画 */
+.footprint-route {
+    animation: routeFlow 1.6s linear infinite;
 }
 
-/* 提高 tooltip 层级，确保在 Leaflet 控件之上 */
-.map-tooltip {
-    z-index: 1000;
+@keyframes routeFlow {
+    to { stroke-dashoffset: -12; }
 }
 
-/* 让 Leaflet 的 attribution 不显示（已由高德/Leaflet 提供，但保持页面简洁） */
+/* 让 Leaflet 的 attribution 不显示 */
 .leaflet-control-attribution {
     display: none;
 }
@@ -2680,15 +2556,10 @@ footer p {
     .footprint-section h2 { font-size: 1.6rem; margin-bottom: 2rem; }
     .footprint-card { padding: 1rem; border-radius: var(--radius); }
     .handdrawn-map { border-radius: calc(var(--radius) - 0.25rem); }
-    .custom-leaflet-marker .map-marker {
-        width: 44px;
-        height: 44px;
-    }
     .map-tooltip { padding: 0.65rem 0.85rem; min-width: 130px; }
     .tooltip-name { font-size: 0.85rem; }
     .tooltip-time { font-size: 0.75rem; }
-    .footprint-legend { gap: 0.5rem 0.7rem; margin-top: 1.2rem; }
-    .legend-item { padding: 0.35rem 0.75rem; }
+    .footprint-legend { gap: 0.5rem 0.9rem; margin-top: 1.2rem; }
 }
 
 @media (max-width: 360px) {

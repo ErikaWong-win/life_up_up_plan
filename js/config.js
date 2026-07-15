@@ -45,6 +45,14 @@ const THEMES = {
         color: "#ff9f5a",
         glow: "rgba(255, 159, 90, 0.28)",
         desc: "田子坊的夜色与咖啡香"
+    },
+    graduation: {
+        key: "graduation",
+        label: "毕业",
+        emoji: "🎓",
+        color: "#4a6fa5",
+        glow: "rgba(74, 111, 165, 0.28)",
+        desc: "她的大学生涯，也有我的名字"
     }
 };
 
@@ -162,9 +170,16 @@ const CONFIG = {
     },
 
     // 恋爱时光轴：每一件小事都可以图文并茂
-    // theme 从 THEMES 中选取：campus / island / disney / sakura / tianzifang
+    // theme 从 THEMES 中选取：campus / island / disney / sakura / tianzifang / graduation
     // img 可以是单张图片路径，也可以是多张图片的数组
     memories: [
+        {
+            date: "2026-04-25",
+            title: "她把我写进了毕业论文致谢",
+            desc: "本论文是在导师赵海燕老师的悉心指导下完成的，本文作者在此谨表示衷心的感谢。\n也感谢我的父母以及朋友，在毕业这一年期间遇到的所有帮助过我的人，每一次的失败都是为了筑起更强的自己。\n最后，要特别感谢我的男朋友。缘分让我们从人海中的陌生人，因相似的三观与契合的性格相识、相知，最终走到彼此身边。你见过我的脆弱，理解我的困境，在每一次抉择的路口，都给出我理性的建议。你的偏爱让我有了对抗世界的底气，你的坚守让我相信，好的爱情是彼此成就、共同成长。山水一程，三生有幸，往后岁月，愿与你携手奔赴更辽阔的远方。",
+            img: "images/IMG_20260425_150600.jpg",
+            theme: "graduation"
+        },
         {
             date: "2020-05-20",
             title: "我们在一起了",
@@ -261,6 +276,15 @@ const CONFIG = {
             lng: 121.52,
             icon: "📚",
             photos: ["images/IMG_20260328_211151.jpg"]
+        },
+        {
+            city: "嵊泗县 · 花鸟岛",
+            shortName: "花鸟岛",
+            date: "2022-07",
+            lat: 30.85,
+            lng: 122.67,
+            icon: "🌊",
+            photos: ["images/IMG_20260314_154756.jpg"]
         }
     ],
 

@@ -938,19 +938,19 @@
             }).addTo(map);
         });
 
-        // 上海及周边省市视野：聚焦上海 + 苏锡常杭嘉湖，同时保留 recognizable 的长三角上下文
+        // 上海、舟山及周边省市视野：聚焦长三角，同时容纳花鸟岛等较远足迹
         const deltaBounds = L.latLngBounds([
-            [30.6, 120.6],
-            [31.9, 122.0]
+            [30.5, 120.4],
+            [32.0, 123.2]
         ]);
 
         // 足迹点边界
         const latLngs = footprints.map(f => [f.lat, f.lng]);
         const footprintBounds = L.latLngBounds(latLngs).pad(0.18);
 
-        // 合并边界：既要包含所有足迹点，也要展示上海及周边城市
+        // 合并边界：既要包含所有足迹点，也要展示长三角城市上下文
         const finalBounds = footprintBounds.extend(deltaBounds);
-        map.fitBounds(finalBounds, { padding: [40, 40], maxZoom: 11 });
+        map.fitBounds(finalBounds, { padding: [80, 80], maxZoom: 11 });
 
         // 图标颜色
         const iconColors = {
@@ -958,7 +958,8 @@
             "🏠": "#f1c40f",
             "🌿": "#7cb342",
             "🎡": "#e74c3c",
-            "📚": "#5b7cfa"
+            "📚": "#5b7cfa",
+            "🌊": "#3ec2d1"
         };
 
         const markers = [];
@@ -967,17 +968,23 @@
             const color = iconColors[f.icon] || "#e06c9f";
             const isCurrent = i === footprints.length - 1;
             const iconHtml = `
-                <div class="map-marker ${isCurrent ? "current" : ""}" data-index="${i}" style="color: ${color};">
+                <div class="map-marker ${isCurrent ? "current" : ""}" data-index="${i}" style="--marker-color: ${color};">
                     <span class="marker-pulse"></span>
+                    <span class="marker-pin">
+                        <svg viewBox="0 0 36 44" aria-hidden="true">
+                            <path class="pin-shape" d="M18 0 C8 0 0 8 0 18 C0 28 18 44 18 44 C18 44 36 28 36 18 C36 8 28 0 18 0 Z" />
+                            <circle class="pin-dot" cx="18" cy="17" r="10" />
+                        </svg>
+                        <span class="marker-icon">${f.icon}</span>
+                    </span>
                     ${isCurrent ? '<span class="marker-star">✨</span>' : ""}
-                    <span class="marker-icon">${f.icon}</span>
                 </div>
             `;
             const icon = L.divIcon({
                 html: iconHtml,
                 className: "custom-leaflet-marker",
-                iconSize: [56, 56],
-                iconAnchor: [28, 28]
+                iconSize: [44, 54],
+                iconAnchor: [22, 48]
             });
             const marker = L.marker([f.lat, f.lng], { icon }).addTo(map);
             markers.push(marker);
@@ -1008,21 +1015,25 @@
 
         // 绘制足迹路线
         L.polyline(latLngs, {
-            color: "#FF9EB5",
-            weight: 3.2,
-            opacity: 0.95,
-            dashArray: "7 5",
+            color: "#C98B8B",
+            weight: 2.5,
+            opacity: 0.85,
+            dashArray: "6 6",
             lineCap: "round",
-            lineJoin: "round"
+            lineJoin: "round",
+            className: "footprint-route"
         }).addTo(map);
 
         // 图例
-        legendEl.innerHTML = footprints.map((f, i) => `
-            <span class="legend-item" data-index="${i}">
-                <span class="legend-icon">${f.icon}</span>
-                <span>${f.shortName || f.city}</span>
-            </span>
-        `).join("");
+        legendEl.innerHTML = footprints.map((f, i) => {
+            const color = iconColors[f.icon] || "#e06c9f";
+            return `
+                <span class="legend-item" data-index="${i}">
+                    <span class="legend-icon" style="color: ${color};">${f.icon}</span>
+                    <span>${f.shortName || f.city}</span>
+                </span>
+            `;
+        }).join("");
 
         function showTooltip(markerEl, data) {
             const rect = markerEl.getBoundingClientRect();
