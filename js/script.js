@@ -384,23 +384,10 @@
         return `<img src="${img}" alt="回忆" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>🌟</div>'">`;
     }
 
-    function renderThemeChapter(themeKey, theme) {
-        return `
-            <section class="theme-chapter" data-theme="${themeKey}">
-                <div class="chapter-glow"></div>
-                <div class="chapter-content">
-                    <div class="chapter-icon">${theme.emoji}</div>
-                    <h3>${theme.label}</h3>
-                    <p>${theme.desc}</p>
-                </div>
-            </section>
-        `;
-    }
-
     function renderTimeline() {
-        const memories = Array.isArray(CONFIG.memories) ? CONFIG.memories : [];
+        const story = Array.isArray(CONFIG.story) ? CONFIG.story : [];
 
-        if (memories.length === 0) {
+        if (story.length === 0) {
             timeline.innerHTML = `
                 <ul class="timeline">
                     <li class="timeline-item visible">
@@ -408,7 +395,7 @@
                         <div class="timeline-text">
                             <span class="date">现在</span>
                             <h3>写下你们的第一件小事</h3>
-                            <p>在 js/config.js 的 memories 里添加日期、标题、描述和照片，时光轴就会图文并茂地展示出来。</p>
+                            <p>在 js/config.js 的 story 里添加日期、标题、描述和照片，故事时间轴就会图文并茂地展示出来。</p>
                         </div>
                     </li>
                 </ul>
@@ -416,23 +403,13 @@
             return;
         }
 
-        const sorted = [...memories].sort((a, b) => new Date(b.date) - new Date(a.date));
-        let currentTheme = null;
-        let html = "";
+        // 按日期正序排列，讲述从相识到远行的时间线
+        const sorted = [...story].sort((a, b) => new Date(a.date) - new Date(b.date));
+        let html = `<ul class="timeline">`;
 
-        sorted.forEach((item, index) => {
-            const themeKey = (item.theme && THEMES[item.theme]) ? item.theme : "campus";
+        sorted.forEach((item) => {
+            const themeKey = (item.theme && THEMES[item.theme]) ? item.theme : "sakura";
             const theme = THEMES[themeKey];
-
-            // 每次主题切换时：结束上一个 <ul>，插入章节分隔页，开始新的 <ul>
-            if (themeKey !== currentTheme) {
-                if (currentTheme !== null) {
-                    html += "</ul>";
-                }
-                currentTheme = themeKey;
-                html += renderThemeChapter(themeKey, theme);
-                html += `<ul class="timeline" data-theme="${themeKey}">`;
-            }
 
             html += `
                 <li class="timeline-item" data-theme="${themeKey}">
@@ -447,11 +424,7 @@
             `;
         });
 
-        // 关闭最后一个 <ul>
-        if (currentTheme !== null) {
-            html += "</ul>";
-        }
-
+        html += "</ul>";
         timeline.innerHTML = html;
     }
 
@@ -471,30 +444,23 @@
 
     // ==================== 主题切换与过渡动画 ====================
     function initThemeObserver() {
-        const chapters = document.querySelectorAll(".theme-chapter");
-        if (chapters.length === 0) return;
+        const items = document.querySelectorAll(".timeline-item");
+        if (items.length === 0) return;
 
         let lastActiveKey = null;
 
         const observer = new IntersectionObserver((entries) => {
-            // 取当前进入视口最靠上的章节作为激活主题
+            // 取当前进入视口最靠上的时间轴节点作为激活主题
             const visible = entries
                 .filter(e => e.isIntersecting)
                 .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
 
             if (visible.length > 0) {
                 const activeKey = visible[0].target.dataset.theme;
-                const activeChapter = visible[0].target;
 
                 if (activeKey !== lastActiveKey) {
                     document.body.dataset.activeTheme = activeKey;
                     lastActiveKey = activeKey;
-
-                    // 给刚激活的章节加一个短暂脉冲，强化“进入新主题”的感知
-                    activeChapter.classList.remove("switching");
-                    void activeChapter.offsetWidth; // 强制重绘，让动画可复用
-                    activeChapter.classList.add("switching");
-                    setTimeout(() => activeChapter.classList.remove("switching"), 900);
                 }
 
                 const theme = THEMES[activeKey];
@@ -504,27 +470,14 @@
             }
         }, { threshold: 0.35, rootMargin: "-20% 0px -50% 0px" });
 
-        chapters.forEach(ch => observer.observe(ch));
-
-        // 章节进入视口时的淡入动画
-        const entranceObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("visible");
-                    entranceObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
-
-        chapters.forEach(ch => entranceObserver.observe(ch));
+        items.forEach(item => observer.observe(item));
 
         // 初始化第一个主题
-        const first = chapters[0];
+        const first = items[0];
         if (first) {
             const key = first.dataset.theme;
             document.body.dataset.activeTheme = key;
             lastActiveKey = key;
-            first.classList.add("visible");
             const theme = THEMES[key];
             if (theme && typeof window.setThemeGlow === "function") {
                 window.setThemeGlow(theme.glow);
@@ -890,6 +843,44 @@
         });
     }
 
+    // ==================== 那些让我心动的瞬间 ====================
+    function renderHeartbeatMoments() {
+        const grid = document.getElementById("heartbeatGrid");
+        if (!grid) return;
+
+        const moments = Array.isArray(CONFIG.heartbeatMoments) ? CONFIG.heartbeatMoments : [];
+        if (moments.length === 0) {
+            grid.innerHTML = `<div class="heartbeat-empty">在 config.js 的 heartbeatMoments 里添加照片和文字，这里会生成心动瞬间卡片 💕</div>`;
+            return;
+        }
+
+        grid.innerHTML = moments.map((item, index) => `
+            <div class="heartbeat-card" style="transition-delay: ${index * 0.1}s">
+                <div class="heartbeat-img">
+                    <img src="${item.img || ""}" alt="心动瞬间" loading="lazy" onerror="this.style.display='none'; this.parentElement.classList.add('fallback')">
+                </div>
+                <div class="heartbeat-text">
+                    <p>${item.text || ""}</p>
+                </div>
+            </div>
+        `).join("");
+
+        observeHeartbeatMoments();
+    }
+
+    function observeHeartbeatMoments() {
+        const items = document.querySelectorAll(".heartbeat-card");
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+            });
+        }, { threshold: 0.12, rootMargin: "0px 0px -50px 0px" });
+
+        items.forEach(item => observer.observe(item));
+    }
+
     // ==================== 足迹地图（Leaflet + 高德瓦片真实长三角地图） ====================
     function renderFootprintMap() {
         const section = document.getElementById("footprintSection");
@@ -959,7 +950,10 @@
             "🌿": "#7cb342",
             "🎡": "#e74c3c",
             "📚": "#5b7cfa",
-            "🌊": "#3ec2d1"
+            "🌊": "#3ec2d1",
+            "🏰": "#e66ef7",
+            "🦁": "#e67e22",
+            "🐠": "#3498db"
         };
 
         const markers = [];
@@ -970,21 +964,15 @@
             const iconHtml = `
                 <div class="map-marker ${isCurrent ? "current" : ""}" data-index="${i}" style="--marker-color: ${color};">
                     <span class="marker-pulse"></span>
-                    <span class="marker-pin">
-                        <svg viewBox="0 0 36 44" aria-hidden="true">
-                            <path class="pin-shape" d="M18 0 C8 0 0 8 0 18 C0 28 18 44 18 44 C18 44 36 28 36 18 C36 8 28 0 18 0 Z" />
-                            <circle class="pin-dot" cx="18" cy="17" r="10" />
-                        </svg>
-                        <span class="marker-icon">${f.icon}</span>
-                    </span>
+                    <span class="marker-icon">${f.icon}</span>
                     ${isCurrent ? '<span class="marker-star">✨</span>' : ""}
                 </div>
             `;
             const icon = L.divIcon({
                 html: iconHtml,
                 className: "custom-leaflet-marker",
-                iconSize: [44, 54],
-                iconAnchor: [22, 48]
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
             });
             const marker = L.marker([f.lat, f.lng], { icon }).addTo(map);
             markers.push(marker);
@@ -1309,31 +1297,24 @@
 
         sectionObserver.observe(section);
 
+        // ==================== 生日手写信 ====================
+        const birthdayLetter = document.getElementById("birthdayLetter");
+        const birthdayLetterContent = document.getElementById("birthdayLetterContent");
+        const birthdayLetterSignature = document.getElementById("birthdayLetterSignature");
+        if (birthdayLetterContent) {
+            birthdayLetterContent.textContent = birthdayConfig.letter || "";
+        }
+        if (birthdayLetterSignature) {
+            birthdayLetterSignature.textContent = birthdayConfig.letterSignature || "";
+        }
+
         // ==================== 蜡烛交互 ====================
         const candles = section.querySelectorAll(".candle");
         const cakeContainer = document.getElementById("cakeContainer");
-        const birthdayMessage = document.getElementById("birthdayMessage");
-        const typewriter = document.getElementById("birthdayTypewriter");
         const smokeContainer = document.getElementById("smokeContainer");
         const wishDelivered = document.getElementById("wishDelivered");
         let extinguishedCount = 0;
-        let messageTyped = false;
-
-        function typeBirthdayMessage(text) {
-            if (!typewriter) return;
-            typewriter.textContent = "";
-            typewriter.classList.remove("done");
-            let index = 0;
-            const timer = setInterval(() => {
-                if (index < text.length) {
-                    typewriter.textContent += text.charAt(index);
-                    index++;
-                } else {
-                    clearInterval(timer);
-                    typewriter.classList.add("done");
-                }
-            }, 70);
-        }
+        let letterShown = false;
 
         function createSmoke(candleEl) {
             if (!smokeContainer) return;
@@ -1380,18 +1361,15 @@
             if (cakeContainer) cakeContainer.classList.add("all-out");
             if (cakeHint) cakeHint.textContent = birthdayConfig.afterBlowHint || "愿望已实现 ✨";
 
-            // 显示祝福语
-            if (birthdayMessage && !messageTyped) {
-                messageTyped = true;
-                birthdayMessage.classList.add("show");
-                if (birthdayConfig.message) {
-                    setTimeout(() => typeBirthdayMessage(birthdayConfig.message), 400);
-                }
+            // 吹灭蜡烛后，缓缓展开手写信
+            if (birthdayLetter && !letterShown) {
+                letterShown = true;
+                setTimeout(() => birthdayLetter.classList.add("show"), 500);
             }
 
             // 显示“愿望已送达”
             if (wishDelivered) {
-                setTimeout(() => wishDelivered.classList.add("show"), 1200);
+                setTimeout(() => wishDelivered.classList.add("show"), 1600);
             }
 
             // 触发烟花
@@ -1746,16 +1724,13 @@
     // ==================== 初始化 ====================
     initStarfield();
     renderWall();
-    collectGalleryImages();
-    renderGallery();
     renderFootprintMap();
     renderTimeline();
     observeTimeline();
     initThemeObserver();
     initScrollHint();
     initScrollProgress();
-    initStats();
-    initAnniversaryCountdown();
+    renderHeartbeatMoments();
     initLoveLetter();
     initMeaningSection();
     initBirthdayTransition();

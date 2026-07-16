@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我们的小世界 💕</title>
+    <title>周蕊蕊天下第一！ 💕</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 </head>
@@ -14,7 +14,7 @@
     <!-- 全屏星空与流星雨画布 -->
     <canvas class="starfield" id="starfield"></canvas>
 
-    <!-- 主题氛围过渡层：随恋爱时光轴主题切换而渐变 -->
+    <!-- 主题氛围过渡层 -->
     <div class="theme-transition-layer" id="themeTransitionLayer"></div>
 
     <!-- 首屏：照片墙背景 -->
@@ -22,8 +22,8 @@
         <div class="photo-wall" id="photoWall"></div>
 
         <div class="hero-overlay">
-            <h1>我们的小世界</h1>
-            <p class="subtitle">每一张照片，都是心动的证据</p>
+            <h1>你好呀，我的宝宝！</h1>
+            <p class="subtitle">正如所有伟大的故事，都有一个看似寻常的开头</p>
 
             <div class="counter" id="counter">
                 <div><span id="years">0</span><small>年</small></div>
@@ -33,7 +33,7 @@
                 <div><span id="minutes">0</span><small>分</small></div>
                 <div><span id="seconds">0</span><small>秒</small></div>
             </div>
-            <p class="start-date">从 <span id="startDateText"></span> 开始，一直在一起</p>
+            <p class="start-date">而我们的开头，是一份简历，一间会议室，和一个认真回答问题的女孩</br>从 <span id="startDateText"></span> 起，我们一起走过了上面的每一分每一秒。</p>
         </div>
 
         <div class="scroll-hint">
@@ -41,6 +41,43 @@
             <div class="arrow">↓</div>
         </div>
     </section>
+
+    <div class="section-divider"><span>•</span></div>
+
+    <!-- 恋爱故事时间轴 -->
+    <main class="timeline-section">
+        <h2>我们的恋爱故事</h2>
+        <div class="timeline-wrap" id="timeline"></div>
+    </main>
+
+    <div class="section-divider"><span>•</span></div>
+
+    <!-- 足迹地图 -->
+    <section class="footprint-section" id="footprintSection">
+        <h2>我们的足迹地图</h2>
+        <div class="footprint-card">
+            <div class="handdrawn-map" id="handdrawnMap">
+                <div class="leaflet-map" id="leafletMap"></div>
+                <div class="map-tooltip" id="mapTooltip">
+                    <strong class="tooltip-name"></strong>
+                    <span class="tooltip-time"></span>
+                </div>
+            </div>
+            <div class="footprint-legend" id="footprintLegend">
+                <!-- 图例由 JS 注入 -->
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><span>•</span></div>
+
+    <!-- 那些让我心动的瞬间 -->
+    <section class="heartbeat-section" id="heartbeatSection">
+        <h2>那些让我心动的瞬间</h2>
+        <div class="heartbeat-grid" id="heartbeatGrid"></div>
+    </section>
+
+    <div class="section-divider"><span>•</span></div>
 
     <!-- 双面情书 -->
     <section class="love-letter-section" id="loveLetterSection">
@@ -74,79 +111,6 @@
                 </div>
             </div>
         </div>
-    </section>
-
-    <div class="section-divider"><span>•</span></div>
-
-    <!-- 恋爱数据统计 -->
-    <section class="stats-section" id="statsSection">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-number" data-target="days" data-value="0">0</span>
-                <span class="stat-label">相伴天数</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" data-target="photos" data-value="0">0</span>
-                <span class="stat-label">照片总数</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" data-target="memories" data-value="0">0</span>
-                <span class="stat-label">回忆片段</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" data-target="heartbeat" data-value="0">0</span>
-                <span class="stat-label">心动瞬间</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- 纪念日倒计时 -->
-    <section class="anniversary-section" id="anniversarySection">
-        <div class="anniversary-card">
-            <span class="anniversary-label" id="anniversaryLabel">距离我们的下一个纪念日</span>
-            <div class="anniversary-countdown" id="anniversaryCountdown">
-                <div><span id="annDays">0</span><small>天</small></div>
-                <div><span id="annHours">00</span><small>时</small></div>
-                <div><span id="annMinutes">00</span><small>分</small></div>
-                <div><span id="annSeconds">00</span><small>秒</small></div>
-            </div>
-            <p class="anniversary-date" id="anniversaryDate"></p>
-        </div>
-    </section>
-
-    <div class="section-divider"><span>•</span></div>
-
-    <!-- 足迹地图 -->
-    <section class="footprint-section" id="footprintSection">
-        <h2>我们的长三角回忆地图</h2>
-        <div class="footprint-card">
-            <div class="handdrawn-map" id="handdrawnMap">
-                <div class="leaflet-map" id="leafletMap"></div>
-                <div class="map-tooltip" id="mapTooltip">
-                    <strong class="tooltip-name"></strong>
-                    <span class="tooltip-time"></span>
-                </div>
-            </div>
-            <div class="footprint-legend" id="footprintLegend">
-                <!-- 图例由 JS 注入 -->
-            </div>
-        </div>
-    </section>
-
-    <div class="section-divider"><span>•</span></div>
-
-    <!-- 时间轴 -->
-    <main class="timeline-section">
-        <h2>我们的恋爱时光轴</h2>
-        <div class="timeline-wrap" id="timeline"></div>
-    </main>
-
-    <div class="section-divider"><span>•</span></div>
-
-    <!-- 回忆画廊 -->
-    <section class="gallery-section">
-        <h2>我们的回忆碎片</h2>
-        <div class="gallery-grid" id="galleryGrid"></div>
     </section>
 
     <div class="section-divider"><span>•</span></div>
@@ -287,36 +251,44 @@
 
                     <!-- 蜡烛 1 -->
                     <g class="candle" data-index="0" transform="translate(145, 5)">
+                        <rect class="candle-hit" x="-22" y="-55" width="44" height="110" fill="transparent"/>
                         <rect x="-7" y="0" width="14" height="42" rx="3" fill="url(#candleGradient1)"/>
                         <rect x="-7" y="0" width="14" height="10" rx="3" fill="#fff" opacity="0.35"/>
-                        <circle class="flame-glow" cx="0" cy="-20" r="20" fill="url(#flameGlow)" opacity="0.5"/>
-                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#ffcc4d"/>
-                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ff9f43"/>
+                        <circle class="flame-glow" cx="0" cy="-20" r="24" fill="url(#flameGlow)" opacity="0.75"/>
+                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#fff0a0"/>
+                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ffcc4d"/>
                     </g>
                     <!-- 蜡烛 2 -->
                     <g class="candle" data-index="1" transform="translate(180, -5)">
+                        <rect class="candle-hit" x="-22" y="-55" width="44" height="110" fill="transparent"/>
                         <rect x="-7" y="0" width="14" height="42" rx="3" fill="url(#candleGradient2)"/>
                         <rect x="-7" y="0" width="14" height="10" rx="3" fill="#fff" opacity="0.35"/>
-                        <circle class="flame-glow" cx="0" cy="-20" r="20" fill="url(#flameGlow)" opacity="0.5"/>
-                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#ffcc4d"/>
-                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ff9f43"/>
+                        <circle class="flame-glow" cx="0" cy="-20" r="24" fill="url(#flameGlow)" opacity="0.75"/>
+                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#fff0a0"/>
+                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ffcc4d"/>
                     </g>
                     <!-- 蜡烛 3 -->
                     <g class="candle" data-index="2" transform="translate(215, 5)">
+                        <rect class="candle-hit" x="-22" y="-55" width="44" height="110" fill="transparent"/>
                         <rect x="-7" y="0" width="14" height="42" rx="3" fill="url(#candleGradient3)"/>
                         <rect x="-7" y="0" width="14" height="10" rx="3" fill="#fff" opacity="0.35"/>
-                        <circle class="flame-glow" cx="0" cy="-20" r="20" fill="url(#flameGlow)" opacity="0.5"/>
-                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#ffcc4d"/>
-                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ff9f43"/>
+                        <circle class="flame-glow" cx="0" cy="-20" r="24" fill="url(#flameGlow)" opacity="0.75"/>
+                        <path class="flame" d="M0 -5 Q-7 -22 0 -38 Q7 -22 0 -5" fill="#fff0a0"/>
+                        <circle class="flame-core" cx="0" cy="-20" r="6" fill="#ffcc4d"/>
                     </g>
                 </svg>
                 <div class="cake-glow"></div>
-                <p class="cake-hint" id="cakeHint">✨ 点一下蜡烛，为她许愿</p>
+                <p class="cake-hint" id="cakeHint">👆 点击蜡烛，吹灭它</p>
             </div>
 
-            <div class="birthday-message" id="birthdayMessage">
-                <h3>给你的话</h3>
-                <div class="typewriter" id="birthdayTypewriter"></div>
+            <!-- 生日手写信：吹灭蜡烛后展开 -->
+            <div class="birthday-letter" id="birthdayLetter">
+                <div class="letter-paper">
+                    <div class="letter-seal">✉</div>
+                    <h3>写给你的生日信</h3>
+                    <div class="letter-content" id="birthdayLetterContent"></div>
+                    <div class="letter-signature" id="birthdayLetterSignature"></div>
+                </div>
             </div>
 
             <div class="wish-delivered" id="wishDelivered">

@@ -933,14 +933,14 @@ footer p {
     transform: translateX(-4px);
 }
 
-/* ==================== 回忆画廊 ==================== */
-.gallery-section {
+/* ==================== 那些让我心动的瞬间 ==================== */
+.heartbeat-section {
     padding: 4rem 1.5rem 6rem;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.gallery-section h2 {
+.heartbeat-section h2 {
     text-align: center;
     font-size: 2.4rem;
     font-weight: 700;
@@ -951,67 +951,102 @@ footer p {
     margin-bottom: 3rem;
 }
 
-.gallery-grid {
+.heartbeat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    grid-auto-rows: 220px;
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+    align-items: start;
 }
 
-.gallery-item {
-    position: relative;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+.heartbeat-card {
+    background: #fff;
+    border-radius: 4px;
+    padding: 0.8rem 0.8rem 1.4rem;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.08),
+        0 2px 6px rgba(0, 0, 0, 0.04);
     opacity: 0;
-    transform: translateY(30px) scale(0.96);
+    transform: translateY(40px) rotate(-1deg);
+    transition:
+        opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.4s ease;
 }
 
-.gallery-item.visible {
+.heartbeat-card:nth-child(even) {
+    transform: translateY(40px) rotate(1.5deg);
+}
+
+.heartbeat-card.visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.4s ease;
+    transform: translateY(0) rotate(-1deg);
 }
 
-.gallery-item:nth-child(3n+1) {
-    grid-row: span 2;
+.heartbeat-card:nth-child(even).visible {
+    transform: translateY(0) rotate(1.5deg);
 }
 
-.gallery-item:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: var(--shadow);
+.heartbeat-card:hover {
+    box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.12),
+        0 4px 10px rgba(0, 0, 0, 0.06);
+    transform: translateY(-6px) rotate(0deg) scale(1.02);
 }
 
-.gallery-item img {
+.heartbeat-card:nth-child(even):hover {
+    transform: translateY(-6px) rotate(0deg) scale(1.02);
+}
+
+.heartbeat-img {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 2px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f0e6e6, #e8e0e0);
+    margin-bottom: 1rem;
+}
+
+.heartbeat-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    filter: sepia(8%) saturate(90%) contrast(98%);
+    filter: sepia(8%) saturate(92%) contrast(98%);
     transition: transform 0.6s ease, filter 0.4s ease;
 }
 
-.gallery-item:hover img {
-    transform: scale(1.08);
+.heartbeat-card:hover .heartbeat-img img {
+    transform: scale(1.06);
     filter: sepia(0%) saturate(100%) contrast(100%);
 }
 
-.gallery-item::after {
-    content: "";
+.heartbeat-img.fallback::after {
+    content: "💕";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.25) 100%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.gallery-item:hover::after {
-    opacity: 1;
+.heartbeat-text p {
+    font-family: "Noto Serif SC", "Source Han Serif SC", serif;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--ink);
+    text-align: center;
+    padding: 0 0.4rem;
+}
+
+.heartbeat-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    background: var(--card-bg-solid);
+    border-radius: var(--radius);
+    color: var(--text-light);
 }
 
 /* ==================== 灯箱 ==================== */
@@ -1710,7 +1745,12 @@ footer p {
 }
 
 .candle:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+}
+
+.candle-hit {
+    pointer-events: all;
+    cursor: pointer;
 }
 
 .candle .flame,
@@ -1720,26 +1760,38 @@ footer p {
 }
 
 .candle .flame {
-    animation: flicker 0.9s ease-in-out infinite alternate;
-    filter: drop-shadow(0 0 8px rgba(255, 159, 67, 0.6));
+    animation: flicker 0.8s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 14px rgba(255, 200, 80, 0.95)) drop-shadow(0 0 28px rgba(255, 140, 60, 0.7));
 }
 
 .candle .flame-core {
-    animation: flicker 0.9s ease-in-out infinite alternate;
+    animation: flicker 0.8s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 6px rgba(255, 220, 120, 0.9));
 }
 
 .candle .flame-glow {
     animation: glowFlicker 1.2s ease-in-out infinite alternate;
+    mix-blend-mode: screen;
+}
+
+.candle:hover .flame {
+    filter: drop-shadow(0 0 18px rgba(255, 220, 100, 1)) drop-shadow(0 0 36px rgba(255, 160, 70, 0.9));
+    transform: scale(1.08);
+}
+
+.candle:hover .flame-glow {
+    opacity: 0.95;
+    transform: scale(1.15);
 }
 
 @keyframes flicker {
     0% { transform: scale(1) rotate(-1deg); opacity: 1; }
-    100% { transform: scale(1.06) rotate(1deg); opacity: 0.95; }
+    100% { transform: scale(1.1) rotate(1deg); opacity: 0.98; }
 }
 
 @keyframes glowFlicker {
-    0% { opacity: 0.4; transform: scale(0.95); }
-    100% { opacity: 0.6; transform: scale(1.05); }
+    0% { opacity: 0.65; transform: scale(0.95); }
+    100% { opacity: 0.9; transform: scale(1.1); }
 }
 
 .candle:nth-of-type(2) .flame,
@@ -1768,80 +1820,121 @@ footer p {
 
 .cake-hint {
     position: absolute;
-    bottom: -2.5rem;
+    bottom: -3rem;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.55);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: rgba(255, 232, 180, 0.9);
     white-space: nowrap;
     transition: opacity 0.4s ease;
     letter-spacing: 0.05em;
+    text-shadow: 0 2px 12px rgba(255, 160, 60, 0.5);
+    animation: hintPulse 1.8s ease-in-out infinite;
+    padding: 0.4rem 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2rem;
+    backdrop-filter: blur(4px);
+}
+
+@keyframes hintPulse {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.9; }
+    50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
 }
 
 .cake-container.all-out .cake-hint {
     opacity: 0;
 }
 
-.birthday-message {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(24px) saturate(1.6);
-    -webkit-backdrop-filter: blur(24px) saturate(1.6);
-    border-radius: 1.25rem;
-    padding: 2.2rem 2.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 25px 50px rgba(0, 0, 0, 0.25),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    opacity: 0;
-    transform: translateY(30px) scale(0.96);
-    transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s,
-                transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
-    pointer-events: none;
-    position: relative;
-    overflow: hidden;
-}
-
-.birthday-message::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
+.birthday-letter {
     width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-    transition: left 0.8s ease;
+    max-width: 680px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(40px) scale(0.96) rotateX(8deg);
+    transform-origin: top center;
+    transition:
+        opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s,
+        transform 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+    pointer-events: none;
+    perspective: 1200px;
 }
 
-.birthday-message.show::before {
-    left: 100%;
-}
-
-.birthday-message.show {
+.birthday-letter.show {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotateX(0deg);
     pointer-events: auto;
 }
 
-.birthday-message h3 {
+.letter-paper {
+    position: relative;
+    background:
+        linear-gradient(180deg, rgba(255, 250, 235, 0.98) 0%, rgba(255, 245, 220, 0.98) 100%);
+    border-radius: 4px;
+    padding: 3.5rem 2.5rem 2.5rem;
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.35),
+        inset 0 0 0 1px rgba(139, 90, 60, 0.12);
+    color: #5a4636;
+    transform: rotate(-1deg);
+    background-image:
+        repeating-linear-gradient(
+            180deg,
+            transparent,
+            transparent 31px,
+            rgba(180, 160, 140, 0.15) 31px,
+            rgba(180, 160, 140, 0.15) 32px
+        );
+}
+
+.letter-seal {
+    position: absolute;
+    top: -22px;
+    right: 2.5rem;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    border-radius: 50%;
     font-size: 1.4rem;
     color: #fff;
-    margin-bottom: 1rem;
-    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(160, 50, 40, 0.4);
+    transform: rotate(-12deg);
+}
+
+.letter-paper h3 {
+    font-family: "Noto Serif SC", "Source Han Serif SC", serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #6b4c3a;
+    margin-bottom: 1.5rem;
+    text-align: center;
     letter-spacing: 0.05em;
 }
 
-.birthday-message .typewriter {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
+.letter-content {
+    font-family: "Noto Serif SC", "Source Han Serif SC", "STKaiti", "KaiTi", "楷体", serif;
+    font-size: 1.15rem;
     line-height: 2;
+    color: #5a4636;
+    white-space: pre-wrap;
     text-align: left;
-    min-height: 80px;
+    padding-left: 0.5rem;
 }
 
-.birthday-message .typewriter::after {
-    content: "|";
-    color: var(--primary);
-    animation: blink 1s step-end infinite;
+.letter-signature {
+    margin-top: 2rem;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "STKaiti", "KaiTi", serif;
+    font-size: 1.1rem;
+    color: #6b4c3a;
+    text-align: right;
+    padding-right: 1rem;
+}
+
+.letter-signature:empty {
+    display: none;
 }
 
 .wish-delivered {
@@ -2101,60 +2194,30 @@ footer p {
 
 .map-marker {
     position: relative;
-    width: 44px;
-    height: 54px;
+    width: 36px;
+    height: 36px;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 4;
-    transform-origin: bottom center;
+    transform-origin: center;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
 }
 
 .map-marker:hover,
 .map-marker.active {
-    transform: translateY(-4px) scale(1.08);
+    transform: translateY(-4px) scale(1.15);
     z-index: 10;
-}
-
-.marker-pin {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.marker-pin svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    overflow: visible;
-}
-
-.marker-pin .pin-shape {
-    fill: var(--marker-color);
-    stroke: rgba(255, 255, 255, 0.9);
-    stroke-width: 1.5;
-    transition: filter 0.3s ease;
-}
-
-.marker-pin .pin-dot {
-    fill: rgba(255, 255, 255, 0.95);
 }
 
 .marker-icon {
     position: relative;
     z-index: 2;
-    font-size: 1.15rem;
+    font-size: 1.7rem;
     line-height: 1;
-    margin-top: -18px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -2163,14 +2226,14 @@ footer p {
     transform: scale(1.15);
 }
 
-.map-marker.current .marker-pin .pin-shape {
+.map-marker.current .marker-icon {
     filter: drop-shadow(0 0 10px var(--marker-color));
 }
 
 .marker-star {
     position: absolute;
-    top: -2px;
-    right: -2px;
+    top: -8px;
+    right: -8px;
     font-size: 0.85rem;
     line-height: 1;
     animation: starBlink 1.8s ease-in-out infinite;
@@ -2538,10 +2601,12 @@ footer p {
     .birthday-title { font-size: 2.4rem; }
     .birthday-subtitle { font-size: 1rem; margin-bottom: 2rem; }
     .cake { width: 240px; }
-    .cake-hint { font-size: 0.85rem; }
-    .birthday-message { padding: 1.6rem 1.4rem; border-radius: var(--radius); }
-    .birthday-message h3 { font-size: 1.15rem; }
-    .birthday-message .typewriter { font-size: 0.95rem; }
+    .cake-hint { font-size: 0.9rem; bottom: -2.6rem; }
+    .birthday-letter { padding: 0 1rem; }
+    .letter-paper { padding: 2.5rem 1.6rem 1.8rem; }
+    .letter-paper h3 { font-size: 1.25rem; }
+    .letter-content { font-size: 1rem; }
+    .letter-seal { width: 36px; height: 36px; font-size: 1.1rem; top: -18px; }
     .spotlight { width: 300px; filter: blur(20px); }
     .nebula { filter: blur(40px); }
 
