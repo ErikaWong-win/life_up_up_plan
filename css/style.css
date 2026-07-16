@@ -1193,6 +1193,37 @@ footer p {
     to { transform: scaleY(1.2); }
 }
 
+/* ==================== 自动播放提示 ==================== */
+.autoplay-prompt {
+    position: fixed;
+    bottom: 5.5rem;
+    right: 1.5rem;
+    z-index: 9997;
+    background: var(--card-bg-solid);
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.7rem 1.2rem;
+    border-radius: 2rem;
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.autoplay-prompt.visible {
+    opacity: 1;
+    transform: translateY(0);
+    animation: promptPulse 2s ease-in-out infinite;
+}
+
+@keyframes promptPulse {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.02); }
+}
+
 /* ==================== 点击爱心 ==================== */
 .click-heart {
     position: fixed;
@@ -1741,11 +1772,6 @@ footer p {
 
 .candle {
     cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.candle:hover {
-    transform: scale(1.15);
 }
 
 .candle-hit {
@@ -1756,17 +1782,19 @@ footer p {
 .candle .flame,
 .candle .flame-core,
 .candle .flame-glow {
+    transform-box: fill-box;
     transform-origin: center bottom;
+    transition: transform 0.25s ease, filter 0.25s ease;
 }
 
 .candle .flame {
     animation: flicker 0.8s ease-in-out infinite alternate;
-    filter: drop-shadow(0 0 14px rgba(255, 200, 80, 0.95)) drop-shadow(0 0 28px rgba(255, 140, 60, 0.7));
+    filter: drop-shadow(0 0 16px rgba(255, 210, 90, 1)) drop-shadow(0 0 32px rgba(255, 140, 60, 0.85));
 }
 
 .candle .flame-core {
     animation: flicker 0.8s ease-in-out infinite alternate;
-    filter: drop-shadow(0 0 6px rgba(255, 220, 120, 0.9));
+    filter: drop-shadow(0 0 8px rgba(255, 230, 130, 1));
 }
 
 .candle .flame-glow {
@@ -1775,23 +1803,27 @@ footer p {
 }
 
 .candle:hover .flame {
-    filter: drop-shadow(0 0 18px rgba(255, 220, 100, 1)) drop-shadow(0 0 36px rgba(255, 160, 70, 0.9));
-    transform: scale(1.08);
+    filter: drop-shadow(0 0 22px rgba(255, 230, 120, 1)) drop-shadow(0 0 44px rgba(255, 170, 80, 1));
+    transform: scale(1.15);
+}
+
+.candle:hover .flame-core {
+    transform: scale(1.1);
 }
 
 .candle:hover .flame-glow {
-    opacity: 0.95;
-    transform: scale(1.15);
+    opacity: 1;
+    transform: scale(1.25);
 }
 
 @keyframes flicker {
     0% { transform: scale(1) rotate(-1deg); opacity: 1; }
-    100% { transform: scale(1.1) rotate(1deg); opacity: 0.98; }
+    100% { transform: scale(1.12) rotate(1deg); opacity: 0.98; }
 }
 
 @keyframes glowFlicker {
-    0% { opacity: 0.65; transform: scale(0.95); }
-    100% { opacity: 0.9; transform: scale(1.1); }
+    0% { opacity: 0.75; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1.15); }
 }
 
 .candle:nth-of-type(2) .flame,
@@ -1844,6 +1876,13 @@ footer p {
 
 .cake-container.all-out .cake-hint {
     opacity: 0;
+}
+
+.cake-container.all-out {
+    opacity: 0.75;
+    transform: scale(0.92);
+    transition: opacity 1s ease 0.5s, transform 1s ease 0.5s;
+    filter: blur(0.5px);
 }
 
 .birthday-letter {
@@ -2001,14 +2040,14 @@ footer p {
     pointer-events: none;
 }
 
-/* ==================== 未来约定 ==================== */
-.future-section {
+/* ==================== 那些被记录的里程碑 ==================== */
+.milestones-section {
     padding: 5rem 1.5rem;
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
-.future-section h2 {
+.milestones-section h2 {
     text-align: center;
     font-size: 2.4rem;
     font-weight: 700;
@@ -2019,101 +2058,119 @@ footer p {
     margin-bottom: 3rem;
 }
 
-.future-grid {
+.milestones-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
-    margin-bottom: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.6rem;
 }
 
-.future-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.9rem;
-    background: var(--card-bg-solid);
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    border-radius: var(--radius-sm);
-    padding: 1.2rem 1.4rem;
-    box-shadow: var(--shadow-soft);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-}
-
-.future-item.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.future-item:hover {
-    box-shadow: var(--shadow);
-}
-
-.future-item .checkbox {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s ease, transform 0.3s ease;
-    font-size: 0.85rem;
-    color: transparent;
-}
-
-.future-item.checked .checkbox {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: #fff;
-    transform: scale(1.1);
-}
-
-.future-item p {
-    color: var(--text);
-    font-size: 1rem;
-    line-height: 1.7;
-    transition: color 0.3s ease;
-}
-
-.future-item.checked p {
-    color: var(--text-light);
-    text-decoration: line-through;
-    text-decoration-color: var(--primary);
-    text-decoration-thickness: 2px;
-}
-
-.next-milestone {
-    text-align: center;
+.milestone-card {
     background: var(--card-bg-solid);
     border: 1px solid rgba(0, 0, 0, 0.04);
     border-radius: var(--radius);
-    padding: 2rem;
-    box-shadow: var(--shadow);
+    padding: 2rem 1.8rem;
+    box-shadow: var(--shadow-soft);
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s ease;
+    text-align: center;
 }
 
-.next-milestone.visible {
+.milestone-card.visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-.next-milestone h3 {
-    font-size: 1.1rem;
-    color: var(--text-light);
-    margin-bottom: 0.6rem;
+.milestone-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-5px);
 }
 
-.next-milestone p {
-    font-size: 1.6rem;
+.milestone-card.visible:hover {
+    transform: translateY(-5px);
+}
+
+.milestone-icon {
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.08));
+}
+
+.milestone-card h3 {
+    font-size: 1.25rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-dark), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--ink);
+    margin-bottom: 1rem;
+}
+
+.milestone-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    box-shadow: var(--shadow-soft);
+}
+
+.milestone-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+}
+
+.milestone-card:hover .milestone-img img {
+    transform: scale(1.05);
+}
+
+.milestone-img.fallback::after {
+    content: "💕";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.milestone-desc {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+}
+
+.milestone-quote {
+    position: relative;
+    font-family: "Noto Serif SC", "Source Han Serif SC", serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    line-height: 1.85;
+    color: var(--ink-light);
+    background: rgba(201, 139, 139, 0.06);
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 1rem 1.2rem;
+    text-align: left;
+    white-space: pre-wrap;
+}
+
+.milestone-quote::before {
+    content: """;
+    position: absolute;
+    top: 0.3rem;
+    left: 0.6rem;
+    font-size: 2.5rem;
+    color: var(--primary);
+    opacity: 0.2;
+    font-family: Georgia, serif;
+    line-height: 1;
 }
 
 /* ==================== 足迹地图（真实长三角可爱地图） ==================== */
@@ -2610,12 +2667,13 @@ footer p {
     .spotlight { width: 300px; filter: blur(20px); }
     .nebula { filter: blur(40px); }
 
-    .future-section { padding: 3rem 1rem; }
-    .future-section h2 { font-size: 1.6rem; margin-bottom: 2rem; }
-    .future-grid { grid-template-columns: 1fr; gap: 0.8rem; }
-    .future-item { padding: 1rem 1.1rem; }
-    .next-milestone { padding: 1.4rem 1rem; }
-    .next-milestone p { font-size: 1.2rem; }
+    .milestones-section { padding: 3rem 1rem; }
+    .milestones-section h2 { font-size: 1.6rem; margin-bottom: 2rem; }
+    .milestones-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+    .milestone-card { padding: 1.6rem 1.4rem; }
+    .milestone-icon { font-size: 2.6rem; }
+    .milestone-card h3 { font-size: 1.15rem; }
+    .milestone-quote { font-size: 0.9rem; padding: 0.85rem 1rem; }
 
     .footprint-section { padding: 3rem 1rem; }
     .footprint-section h2 { font-size: 1.6rem; margin-bottom: 2rem; }

@@ -1364,12 +1364,18 @@
             // 吹灭蜡烛后，缓缓展开手写信
             if (birthdayLetter && !letterShown) {
                 letterShown = true;
-                setTimeout(() => birthdayLetter.classList.add("show"), 500);
+                setTimeout(() => {
+                    birthdayLetter.classList.add("show");
+                    // 信纸开始展开后，平滑滚动到信件中心，让用户无需手动下拉
+                    setTimeout(() => {
+                        birthdayLetter.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }, 700);
+                }, 500);
             }
 
             // 显示“愿望已送达”
             if (wishDelivered) {
-                setTimeout(() => wishDelivered.classList.add("show"), 1600);
+                setTimeout(() => wishDelivered.classList.add("show"), 2200);
             }
 
             // 触发烟花
@@ -1511,38 +1517,32 @@
         resize();
     }
 
-    // ==================== 未来约定 ====================
-    function initFutureSection() {
-        const section = document.getElementById("futureSection");
-        const grid = document.getElementById("futureGrid");
-        const milestoneEl = document.getElementById("nextMilestone");
+    // ==================== 那些被记录的里程碑 ====================
+    function initMilestones() {
+        const section = document.getElementById("milestonesSection");
+        const grid = document.getElementById("milestonesGrid");
         if (!section || !grid) return;
 
-        const promises = Array.isArray(CONFIG.futurePromises) ? CONFIG.futurePromises : [];
-        if (promises.length === 0) {
+        const milestones = Array.isArray(CONFIG.milestones) ? CONFIG.milestones : [];
+        if (milestones.length === 0) {
             section.style.display = "none";
             return;
         }
 
-        grid.innerHTML = promises.map((item, index) => `
-            <div class="future-item ${item.checked ? "checked" : ""}" data-index="${index}" style="transition-delay: ${index * 0.08}s">
-                <span class="checkbox">✓</span>
-                <p>${item.text || ""}</p>
+        grid.innerHTML = milestones.map((item, index) => `
+            <div class="milestone-card" style="transition-delay: ${index * 0.12}s">
+                <div class="milestone-icon">${item.icon || "✨"}</div>
+                <h3>${item.title || ""}</h3>
+                ${item.img ? `
+                    <div class="milestone-img">
+                        <img src="${item.img}" alt="${item.title || "里程碑"}" loading="lazy" onerror="this.style.display='none'; this.parentElement.classList.add('fallback')">
+                    </div>
+                ` : ""}
+                <p class="milestone-desc">${item.desc || ""}</p>
+                ${item.quote ? `<blockquote class="milestone-quote">${item.quote}</blockquote>` : ""}
             </div>
         `).join("");
 
-        // 点击切换勾选状态
-        grid.querySelectorAll(".future-item").forEach(el => {
-            el.addEventListener("click", () => {
-                el.classList.toggle("checked");
-                const index = parseInt(el.dataset.index, 10);
-                if (CONFIG.futurePromises[index]) {
-                    CONFIG.futurePromises[index].checked = el.classList.contains("checked");
-                }
-            });
-        });
-
-        // 入场动画
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1552,25 +1552,7 @@
             });
         }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
 
-        grid.querySelectorAll(".future-item").forEach(item => observer.observe(item));
-
-        // 下一个重要日子倒计时（下一个生日）
-        if (milestoneEl) {
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const birthday = new Date(CONFIG.startDate + "T00:00:00");
-            let nextBirthday = new Date(currentYear, birthday.getMonth(), birthday.getDate());
-            if (nextBirthday <= now) {
-                nextBirthday = new Date(currentYear + 1, birthday.getMonth(), birthday.getDate());
-            }
-
-            const diffDays = Math.ceil((nextBirthday - now) / (1000 * 60 * 60 * 24));
-            milestoneEl.innerHTML = `
-                <h3>距离她的下一个生日还有</h3>
-                <p>${diffDays} 天</p>
-            `;
-            observer.observe(milestoneEl);
-        }
+        grid.querySelectorAll(".milestone-card").forEach(card => observer.observe(card));
     }
 
     // ==================== 背景音乐播放器 ====================
@@ -1599,7 +1581,7 @@
         let isPlaying = false;
         let currentSrc = "";
         let birthdayMode = false;
-        let autoPlayFired = false;
+        let autoplayPrompt = null;
 
         function updateButtonState() {
             if (isPlaying) {
@@ -1614,11 +1596,12 @@
             audio.play().then(() => {
                 isPlaying = true;
                 updateButtonState();
+                hideAutoplayPrompt();
             }).catch(err => {
-                // 浏览器自动播放策略阻止，静默处理，等待用户交互后再试
                 isPlaying = false;
                 updateButtonState();
-                console.warn("音乐自动播放被阻止，将在首次交互后尝试播放", err);
+                showAutoplayPrompt();
+                console.warn("音乐自动播放被阻止，等待用户交互后重试", err);
             });
         }
 
@@ -1641,22 +1624,49 @@
             }
         }
 
-        // 首次用户交互时尝试自动播放（用于绕过浏览器自动播放限制）
-        function tryAutoPlayOnInteraction() {
-            if (autoPlayFired) return;
-            autoPlayFired = true;
-            if (!isPlaying) {
-                initMainMusic();
-            }
+        // 显示自动播放被阻止的轻提示
+        function showAutoplayPrompt() {
+            if (autoplayPrompt) return;
+            autoplayPrompt = document.createElement("div");
+            autoplayPrompt.className = "autoplay-prompt";
+            autoplayPrompt.textContent = "🎵 点击或滑动任意处开启音乐";
+            document.body.appendChild(autoplayPrompt);
+            requestAnimationFrame(() => autoplayPrompt.classList.add("visible"));
         }
 
-        // 监听各类首次用户交互，只触发一次
-        const interactionEvents = ["click", "touchstart", "scroll", "keydown"];
+        function hideAutoplayPrompt() {
+            if (!autoplayPrompt) return;
+            autoplayPrompt.classList.remove("visible");
+            setTimeout(() => {
+                if (autoplayPrompt && autoplayPrompt.parentElement) {
+                    autoplayPrompt.remove();
+                }
+                autoplayPrompt = null;
+            }, 400);
+        }
+
+        // 用户首次交互时尝试播放，成功后移除监听
+        function tryAutoPlayOnInteraction() {
+            if (isPlaying) {
+                removeAutoplayListeners();
+                return;
+            }
+            initMainMusic();
+        }
+
+        function removeAutoplayListeners() {
+            interactionEvents.forEach(evt => {
+                document.removeEventListener(evt, tryAutoPlayOnInteraction, { passive: true });
+            });
+        }
+
+        const interactionEvents = ["click", "touchstart", "scroll", "keydown", "mousemove"];
         interactionEvents.forEach(evt => {
-            document.addEventListener(evt, tryAutoPlayOnInteraction, { once: true, passive: true });
+            document.addEventListener(evt, tryAutoPlayOnInteraction, { passive: true });
         });
 
-        // 页面加载后立刻尝试播放主音乐
+        // 页面加载后立刻尝试自动播放主音乐
+        audio.autoplay = true;
         initMainMusic();
 
         btn.addEventListener("click", () => {
@@ -1736,7 +1746,7 @@
     initBirthdayTransition();
     initBirthdaySection();
     initFireworks();
-    initFutureSection();
+    initMilestones();
     initMusicPlayer();
     initClickHearts();
 })();
