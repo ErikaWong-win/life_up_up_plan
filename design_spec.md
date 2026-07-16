@@ -1,4 +1,7 @@
-好的，以下是加入生日祝福模块后的完整网站提示词。生日板块作为独立页面，可在生日当天作为“彩蛋”解锁，也可以直接展示。
+强制push命令
+```bash
+git push ErikaWong-win.github.io main:sheelia --force
+```
 
 ---
 
