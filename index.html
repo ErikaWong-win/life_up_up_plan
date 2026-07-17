@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>周蕊蕊天下第一！ 💕</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 </head>
@@ -61,6 +64,7 @@
                 <div class="map-tooltip" id="mapTooltip">
                     <strong class="tooltip-name"></strong>
                     <span class="tooltip-time"></span>
+                    <div class="tooltip-photos"></div>
                 </div>
             </div>
             <div class="footprint-legend" id="footprintLegend">
@@ -79,36 +83,48 @@
 
     <div class="section-divider"><span>•</span></div>
 
-    <!-- 双面情书 -->
+    <!-- 情书手札 -->
     <section class="love-letter-section" id="loveLetterSection">
         <div class="love-letter-scene">
-            <div class="love-letter-card" id="loveLetterCard">
-                <div class="love-letter-face love-letter-front">
-                    <span class="letter-tag">我写给 TA</span>
-                    <h2 id="loveLetterTitleFront"></h2>
-                    <div class="typewriter" id="loveLetterContentFront"></div>
-                    <div class="letter-actions">
-                        <button class="replay-btn" id="replayFront" aria-label="重新播放">
-                            <span>↻</span> 再听一遍
-                        </button>
-                        <button class="flip-btn" id="flipToBack" aria-label="翻到背面">
-                            看看 TA 写给我的 <span>→</span>
-                        </button>
+            <div class="letter-tabs" id="letterTabs"></div>
+
+            <div class="letter-stage" id="letterStage">
+                <button class="letter-nav letter-prev" id="letterPrev" aria-label="上一封">‹</button>
+
+                <div class="envelope-wrap" id="envelopeWrap">
+                    <div class="envelope" id="envelope">
+                        <div class="envelope-flap envelope-flap-top"></div>
+                        <div class="envelope-flap envelope-flap-left"></div>
+                        <div class="envelope-flap envelope-flap-right"></div>
+                        <div class="envelope-flap envelope-flap-bottom"></div>
+                        <div class="envelope-body">
+                            <div class="envelope-label">
+                                <span class="envelope-title" id="envelopeTitle"></span>
+                                <span class="envelope-meta" id="envelopeMeta"></span>
+                            </div>
+                            <div class="envelope-seal" id="envelopeSeal"></div>
+                        </div>
+                    </div>
+
+                    <div class="letter-paper" id="letterPaper">
+                        <div class="paper-lines"></div>
+                        <div class="letter-header">
+                            <span class="letter-to" id="letterTo"></span>
+                            <span class="letter-date" id="letterDate"></span>
+                        </div>
+                        <h2 class="letter-title" id="letterTitle"></h2>
+                        <div class="letter-content typewriter" id="letterContent"></div>
+                        <div class="letter-signature" id="letterSignature"></div>
                     </div>
                 </div>
-                <div class="love-letter-face love-letter-back">
-                    <span class="letter-tag">TA 写给我</span>
-                    <h2 id="loveLetterTitleBack"></h2>
-                    <div class="typewriter" id="loveLetterContentBack"></div>
-                    <div class="letter-actions">
-                        <button class="replay-btn" id="replayBack" aria-label="重新播放">
-                            <span>↻</span> 再听一遍
-                        </button>
-                        <button class="flip-btn" id="flipToFront" aria-label="翻回正面">
-                            <span>←</span> 看看我写给 TA 的
-                        </button>
-                    </div>
-                </div>
+
+                <button class="letter-nav letter-next" id="letterNext" aria-label="下一封">›</button>
+            </div>
+
+            <div class="letter-actions" id="letterActions">
+                <button class="open-btn" id="openLetterBtn">✉ 拆开这封信</button>
+                <button class="close-btn hidden" id="closeLetterBtn"><span>✉</span> 放回信封</button>
+                <button class="replay-btn hidden" id="replayLetterBtn"><span>↻</span> 再读一遍</button>
             </div>
         </div>
     </section>
@@ -282,11 +298,11 @@
 
             <!-- 生日手写信：吹灭蜡烛后展开 -->
             <div class="birthday-letter" id="birthdayLetter">
-                <div class="letter-paper">
-                    <div class="letter-seal">✉</div>
+                <div class="birthday-letter-paper">
+                    <div class="birthday-letter-seal">✉</div>
                     <h3>写给你的生日信</h3>
-                    <div class="letter-content" id="birthdayLetterContent"></div>
-                    <div class="letter-signature" id="birthdayLetterSignature"></div>
+                    <div class="birthday-letter-content" id="birthdayLetterContent"></div>
+                    <div class="birthday-letter-signature" id="birthdayLetterSignature"></div>
                 </div>
             </div>
 
@@ -303,8 +319,45 @@
         <canvas class="fireworks" id="fireworks"></canvas>
     </section>
 
+    <!-- 共同维护邀请 -->
+    <section class="invite-section" id="inviteSection">
+        <div class="invite-card">
+            <div class="invite-window">
+                <span></span><span></span><span></span>
+                <code>invite.md</code>
+            </div>
+            <div class="commit-block">
+                <p><span class="commit-key">commit</span> <span class="commit-hash">a1b2c3d</span></p>
+                <p><span class="commit-key">Author:</span> <span id="commitAuthor">你</span> &lt;<span class="commit-email">me@our-story.dev</span>&gt;</p>
+                <p><span class="commit-key">Co-author:</span> <span id="commitCoAuthor">她</span> &lt;<span class="commit-email">you@our-story.dev</span>&gt;</p>
+                <br>
+                <p class="commit-title" id="commitMessage">feat: invite you to co-maintain our story</p>
+                <br>
+                <p class="commit-body">
+                    这个项目已经开源在 GitHub 上。<br>
+                    但我想让它不只是我的项目，而是我们的项目。<br>
+                    未来的每一次 commit，都想和你一起去写。
+                </p>
+            </div>
+            <div class="invite-actions">
+                <a class="invite-repo-btn" id="inviteRepoBtn" href="#" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    查看 GitHub 仓库
+                </a>
+                <button class="invite-accept-btn" id="inviteAcceptBtn">
+                    <span class="invite-accept-text">接受邀请</span>
+                    <span class="invite-accept-check">✓ 已接受</span>
+                </button>
+            </div>
+            <div class="invite-response hidden" id="inviteResponse">
+                <p>从这一刻起，这个仓库有了第二位 maintainer。</p>
+                <p class="invite-merge">git merge --no-ff our-future</p>
+            </div>
+        </div>
+    </section>
+
     <footer>
-        <p>Made with ❤️ for you</p>
+        <p>Made with ❤️ for you · Open source on GitHub</p>
     </footer>
 
     <!-- 图片灯箱 -->
@@ -321,6 +374,12 @@
         <span class="music-waves"><i></i><i></i><i></i></span>
     </button>
     <audio id="bgMusic" loop></audio>
+
+    <!-- 自动滚动开关 -->
+    <button class="auto-scroll-toggle" id="autoScrollToggle" aria-label="开启自动滚动" title="自动滚动">
+        <span class="auto-scroll-icon">⏵</span>
+        <span class="auto-scroll-text">自动滚动</span>
+    </button>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="js/config.js"></script>

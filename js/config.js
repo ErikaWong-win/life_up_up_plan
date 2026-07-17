@@ -39,7 +39,7 @@ const THEMES = {
     },
     tianzifang: {
         key: "tianzifang",
-        label: "小资都市",
+        label: "田子坊",
         emoji: "🏮",
         color: "#ff9f5a",
         glow: "rgba(255, 159, 90, 0.28)",
@@ -52,6 +52,62 @@ const THEMES = {
         color: "#4a6fa5",
         glow: "rgba(74, 111, 165, 0.28)",
         desc: "她的大学生涯，也有我的名字"
+    },
+    confession: {
+        key: "confession",
+        label: "告白",
+        emoji: "💌",
+        color: "#e74c3c",
+        glow: "rgba(231, 76, 60, 0.28)",
+        desc: "那句酝酿很久的'我喜欢你'"
+    },
+    zoo: {
+        key: "zoo",
+        label: "动物园",
+        emoji: "🦒",
+        color: "#70a83b",
+        glow: "rgba(112, 168, 59, 0.28)",
+        desc: "和小动物们一起见证的快乐"
+    },
+    aquarium: {
+        key: "aquarium",
+        label: "水族馆",
+        emoji: "🐠",
+        color: "#1e88e5",
+        glow: "rgba(30, 136, 229, 0.28)",
+        desc: "蓝色水里游动的光和影"
+    },
+    farmstay: {
+        key: "farmstay",
+        label: "农家乐",
+        emoji: "🌾",
+        color: "#c9a227",
+        glow: "rgba(201, 162, 39, 0.28)",
+        desc: "柴火饭和摘草莓的午后"
+    },
+    fireworks: {
+        key: "fireworks",
+        label: "烟花",
+        emoji: "🎆",
+        color: "#9b59b6",
+        glow: "rgba(155, 89, 182, 0.28)",
+        desc: "夜空里炸开的浪漫"
+    },
+    talkshow: {
+        key: "talkshow",
+        label: "脱口秀",
+        emoji: "🎤",
+        color: "#c0392b",
+        glow: "rgba(192, 57, 43, 0.28)",
+        desc: "舞台灯光下的放声大笑"
+    },
+    disneyGarden: {
+        key: "disneyGarden",
+        label: "迪士尼的花园",
+        emoji: "🌹",
+        color: "#e91e63",
+        glow: "rgba(233, 30, 99, 0.28)",
+        desc: "城堡旁盛开的玫瑰"
     }
 };
 
@@ -101,46 +157,7 @@ const CONFIG = {
         { src: "images/IMG_20260501_162444.jpg", thumb: "images/thumbs/IMG_20260501_162444.jpg" },
         { src: "images/IMG_20260501_211441.jpg", thumb: "images/thumbs/IMG_20260501_211441.jpg" },
         { src: "images/IMG_20260505_162002.jpg", thumb: "images/thumbs/IMG_20260505_162002.jpg" },
-        { src: "images/IMG_20260505_162350.jpg", thumb: "images/thumbs/IMG_20260505_162350.jpg" },
-        { src: "images/IMG_20260505_162351_1.jpg", thumb: "images/thumbs/IMG_20260505_162351_1.jpg" },
-        { src: "images/IMG_20260505_162529.jpg", thumb: "images/thumbs/IMG_20260505_162529.jpg" },
-        { src: "images/IMG_20260505_162635.jpg", thumb: "images/thumbs/IMG_20260505_162635.jpg" },
-        { src: "images/IMG_20260505_163003.jpg", thumb: "images/thumbs/IMG_20260505_163003.jpg" },
-        { src: "images/IMG_20260505_171140.jpg", thumb: "images/thumbs/IMG_20260505_171140.jpg" },
-        { src: "images/IMG_20260505_172925.jpg", thumb: "images/thumbs/IMG_20260505_172925.jpg" },
-        { src: "images/IMG_20260505_180710.jpg", thumb: "images/thumbs/IMG_20260505_180710.jpg" },
-        { src: "images/IMG_20260505_211633.jpg", thumb: "images/thumbs/IMG_20260505_211633.jpg" },
-        { src: "images/IMG_20260505_213656.jpg", thumb: "images/thumbs/IMG_20260505_213656.jpg" },
-        { src: "images/IMG_20260506_110921.jpg", thumb: "images/thumbs/IMG_20260506_110921.jpg" },
-        { src: "images/IMG_20260506_111137.jpg", thumb: "images/thumbs/IMG_20260506_111137.jpg" },
-        { src: "images/IMG_20260506_122547.jpg", thumb: "images/thumbs/IMG_20260506_122547.jpg" },
-        { src: "images/IMG_20260506_123818.jpg", thumb: "images/thumbs/IMG_20260506_123818.jpg" },
-        { src: "images/IMG_20260506_132335_1.jpg", thumb: "images/thumbs/IMG_20260506_132335_1.jpg" },
-        { src: "images/IMG_20260506_150437.jpg", thumb: "images/thumbs/IMG_20260506_150437.jpg" },
-        { src: "images/IMG_20260506_150445.jpg", thumb: "images/thumbs/IMG_20260506_150445.jpg" },
-        { src: "images/IMG_20260506_171313.jpg", thumb: "images/thumbs/IMG_20260506_171313.jpg" },
-        { src: "images/IMG_20260506_181749.jpg", thumb: "images/thumbs/IMG_20260506_181749.jpg" },
-        { src: "images/IMG_20260516_151157.jpg", thumb: "images/thumbs/IMG_20260516_151157.jpg" },
-        { src: "images/IMG_20260516_184953.jpg", thumb: "images/thumbs/IMG_20260516_184953.jpg" },
-        { src: "images/IMG_20260517_003347.jpg", thumb: "images/thumbs/IMG_20260517_003347.jpg" },
-        { src: "images/IMG_20260529_110646.jpg", thumb: "images/thumbs/IMG_20260529_110646.jpg" },
-        { src: "images/IMG_20260529_140734_1.jpg", thumb: "images/thumbs/IMG_20260529_140734_1.jpg" },
-        { src: "images/IMG_20260529_153108.jpg", thumb: "images/thumbs/IMG_20260529_153108.jpg" },
-        { src: "images/IMG_20260529_160811.jpg", thumb: "images/thumbs/IMG_20260529_160811.jpg" },
-        { src: "images/IMG_20260529_160934.jpg", thumb: "images/thumbs/IMG_20260529_160934.jpg" },
-        { src: "images/IMG_20260529_162004.jpg", thumb: "images/thumbs/IMG_20260529_162004.jpg" },
-        { src: "images/IMG_20260529_163039.jpg", thumb: "images/thumbs/IMG_20260529_163039.jpg" },
-        { src: "images/IMG_20260530_165642.jpg", thumb: "images/thumbs/IMG_20260530_165642.jpg" },
-        { src: "images/IMG_20260530_170905.jpg", thumb: "images/thumbs/IMG_20260530_170905.jpg" },
-        { src: "images/IMG_20260530_180237.jpg", thumb: "images/thumbs/IMG_20260530_180237.jpg" },
-        { src: "images/IMG_20260530_180823.jpg", thumb: "images/thumbs/IMG_20260530_180823.jpg" },
-        { src: "images/IMG_20260530_184130.jpg", thumb: "images/thumbs/IMG_20260530_184130.jpg" },
-        { src: "images/IMG_20260614_151720.jpg", thumb: "images/thumbs/IMG_20260614_151720.jpg" },
-        { src: "images/MVIMG_20260411_183512.jpg", thumb: "images/thumbs/MVIMG_20260411_183512.jpg" },
-        { src: "images/MVIMG_20260411_193138.jpg", thumb: "images/thumbs/MVIMG_20260411_193138.jpg" },
-        { src: "images/MVIMG_20260529_164510.jpg", thumb: "images/thumbs/MVIMG_20260529_164510.jpg" },
-        { src: "images/mmexport1775126466854.jpg", thumb: "images/thumbs/mmexport1775126466854.jpg" },
-        { src: "images/mmexport1781863937125.jpg", thumb: "images/thumbs/mmexport1781863937125.jpg" },
+
     ],
 
     // 背景音乐（可选）
@@ -150,116 +167,135 @@ const CONFIG = {
     },
 
     // 双面情书（可选）
-    loveLetters: {
-        fromMe: {
+    // 支持多封信，按数组顺序展示
+    loveLetters: [
+        {
             title: "写给你的小情书",
-            content: "有人说，爱情是把 everyday 变成 special day 的魔法。\n和你在一起的每一天，连空气都是甜的。\n谢谢你，成为我生命里最温柔的那道光。"
+            date: "2026-05-20",
+            from: "我",
+            to: "宝宝",
+            content: "和你在一起的每个普通日子，都成了好日子。\n谢谢你愿意和我一起过。",
+            signature: "周蕊蕊头号粉丝",
+            seal: "💌"
         },
-        fromYou: {
+        {
             title: "你写给我的话",
-            content: "遇见你之前，我没想过会这样认真地喜欢一个人。\n你的温柔、你的笑容、你的一切，都让我忍不住想要靠近。\n未来的路，我也想和你一起慢慢走。"
+            date: "2026-05-20",
+            from: "宝宝",
+            to: "我",
+            content: "散步，吹风，看日落。\n这些在遇上你之前。\n叫做\n走路，刮风，和天要黑了。",
+            signature: "周蕊蕊",
+            seal: "💕"
         }
-    },
+    ],
 
     // 恋爱故事时间轴（正序叙事）
     // 你可以按真实经历修改日期、标题、描述和照片
+    // img 支持单张图片字符串，或多张图片数组（最多展示 4 张，超出会自动截断）
     story: [
         {
             date: "2026-02-28",
-            title: "顾村公园 · 第一次出去玩",
-            desc: "那天我们去顾村公园赏樱。阳光很好，风也温柔，我就是在那天开始，对你有了不一样的感觉。",
+            title: "老板，我们一起出去玩吧！",
+            desc: "那天是2月的最后一天，天气还很冷，但是春天的感觉已经很近了，我们说着要去赏花，其实也只是对着几株樱花树拍了几张简单的照片，回去翻看，照片其实算不上多惊艳，但那天躺在野餐垫上、和你有一搭没一搭聊着天的我，心里好像被种下了什么似的。</br>后来才明白，那种下的，是所有故事的开始。",
             img: "images/IMG_20260228_150029.jpg",
             theme: "sakura"
         },
         {
             date: "2026-03-07",
-            title: "上海理工大学 · 怦然心动",
-            desc: "你骑着小电驴载我畅游校园，我坐在后座，看着你飞扬的发梢，心跳得有点快。最后给你拍的那张照片，我一直留着。",
+            title: "-关公的脸为什么是红的？</br>-他急眼了！",
+            desc: "那是我第一次来上理，红砖构造的教会风格建筑可真漂亮。彼时正值初春，你我所拍照的那片草坪还是一片枯黄，你和我说，等到了夏天我们要再来一趟，届时肯定会有一抹迷人的绿色风景。听你这样讲着，忽然觉得一股暖意涌上心头</br>p.s. 宝宝你的小电驴驾驶技术真不错，好几个颠簸的路段你都给我拉住了，后面我要重点学习",
             img: "images/IMG_20260307_165005.jpg",
             theme: "campus"
         },
         {
             date: "2026-03-13",
-            title: "正式告白",
-            desc: "那天我告白得磕磕绊绊，准备好的话讲了一半就忘了，手心全是汗。但你说愿意的那一刻，我觉得全世界都亮了一下。",
-            img: "images/IMG_20260314_151609.jpg",
-            theme: "sakura"
+            title: "其实有一句话我想对你说...",
+            desc: "那天我告白得磕磕绊绊，准备好的话讲了一半就忘了，手心全是汗。但你说愿意试试的那一刻，我就暗自下决心：绝对不会让你后悔。",
+            img: "images/4c3b5dfdb6d8f5b158061e509831c605.jpg",
+            theme: "confession"
         },
         {
             date: "2026-03-14",
-            title: "辰山植物园 · 樱花初开",
-            desc: "在一起的第一天，我们就去了辰山植物园。樱花刚开，你在樱花树下的样子，真的很美。",
-            img: "images/IMG_20260314_154756.jpg",
+            title: "我想紧握你的手",
+            desc: "至于为什么提前告白，是因为我想在樱花树下，以你男朋友的身份，和你一起欣赏这美丽的春色。春天真美好啊，仿佛一切的温暖走向了我们，那天我十分害羞，怕着急牵你的手让你不喜欢，没想到你最后主动牵起了我的手，让我受宠若惊。",
+            img: ["images/IMG_20260314_153548.jpg","images/IMG_20260314_182751.jpg"],
             theme: "sakura"
         },
         {
             date: "2026-03-21",
-            title: "上海动物园",
-            desc: "我们一起去看了大熊猫和各种小动物，你比小孩子还兴奋。",
-            img: "images/IMG_20260328_142819.jpg",
-            theme: "campus"
+            title: "谁会在逛动物园时讨论鸭子的一百种做法啊",
+            desc: "正常人逛动物园：好美丽/可爱的动物宝宝呀</br>我们：湖里游的鸭子怎么做才好吃，感谢你的认可by李斌",
+            img: ["images/zoo1.jpg","images/zoo2.jpg","images/zoo3.jpg","images/zoo4.jpg"],
+            theme: "zoo"
         },
         {
             date: "2026-03-28",
-            title: "水族馆",
-            desc: "蓝色的水里游着鱼，你眼睛里也像是盛了一片海。",
-            img: "images/IMG_20260328_143034.jpg",
-            theme: "campus"
+            title: "想成为长生不老的水母",
+            desc: "永远和你在一起！",
+            img: ["images/IMG_20260328_142819.jpg","images/IMG_20260328_143034.jpg","images/IMG_20260328_143040.jpg"],
+            theme: "aquarium"
         },
         {
-            date: "2026-04-05",
-            title: "田子坊",
-            desc: "在小巷子里乱逛，找了一家咖啡馆坐下，聊了一下午的未来。",
-            img: "images/MVIMG_20260411_183512.jpg",
+            date: "2026-03-28",
+            title: "循此苦旅，终抵群星",
+            desc: "希望我们去看更广阔的世界，而不是困在鸡毛蒜皮的小事里</br>愿我们的血脉永远鼓动，旅途永远坦荡",
+            img:["images/tz1.jpg","images/tz2.jpg"],
             theme: "tianzifang"
         },
         {
             date: "2026-04-01",
-            title: "无锡鼋头渚 · 漫天樱花",
+            title: "樱花飞舞时",
             desc: "那是最棒的一次赏樱。漫天的樱花树下，我们拍出了好多好看的照片，风一吹，花瓣落了你满身。",
-            img: "images/IMG_20260401_150906.jpg",
+            img: "images/IMG_20260401_172642.jpg",
             theme: "sakura"
         },
         {
+            date: "2026-04-05",
+            title: "韭菜不是这样割的！",
+            desc: "可是我们都花了钱啊为什么不让我们快乐割韭菜呜呜呜",
+            img: ["images/farming1.jpg","images/farming2.jpg"],
+            theme: "farmstay"
+        },
+      {
+            date: "2026-04-11",
+            title: "红红火火恍恍惚惚",
+            desc: "在南京路甩一碗米线，看一场脱口秀，太chill啦",
+            img: ["images/talkshow1.jpg","images/talkshow2.jpg"],
+            theme: "talkshow"
+        },
+        {
             date: "2026-05-01",
-            title: "露营",
-            desc: "第一次一起露营，晚上躺在草地上看星星，你说希望时间能停在那一天。",
-            img: "images/IMG_20260501_162444.jpg",
-            theme: "island"
-        },
-        {
-            date: "2026-05-03",
-            title: "农家乐",
-            desc: "去乡下摘了草莓，吃了柴火饭，你笑得像个小太阳。",
-            img: "images/IMG_20260505_162002.jpg",
-            theme: "tianzifang"
-        },
-        {
-            date: "2026-05-05",
-            title: "开卡丁车",
-            desc: "你戴上头盔的样子特别帅，虽然开得很慢，但冲线的时候比谁都开心。",
-            img: "images/IMG_20260505_171140.jpg",
+            title: "我有一顶小帽子",
+            desc: "戴着麦秸帽子的你，仿若摇曳的金盏花般",
+            img: "images/hat.jpg",
             theme: "disney"
         },
         {
             date: "2026-05-06",
-            title: "脱口秀",
-            desc: "我们一起看了人生中第一场脱口秀，你笑得眼泪都出来了。",
-            img: "images/IMG_20260506_110921.jpg",
-            theme: "tianzifang"
-        },
-        {
-            date: "2026-05-13",
-            title: "迪士尼 · 两天一晚",
-            desc: `这是我们第一次出远门。我送了你一封信，和一幅用你照片拼成的拼图。你哭了，说："我就知道我没选错。"`,
-            img: "images/IMG_20260505_213656.jpg",
+            title: "每个人都想成为公主，那为什么不能是我呢",
+            desc: "周蕊蕊陛下抵达了她忠实的迪士尼城堡",
+            img: ["images/disney.jpg","images/thumbs/IMG_20260506_150445.jpg","images/thumbs/IMG_20260505_180710.jpg","images/thumbs/IMG_20260505_172925.jpg"],
             theme: "disney"
         },
         {
+            date: "2026-05-06",
+            title: "朝向一朵花的盛开",
+            desc: "向着光的方向，我们自由且茁壮地成长着",
+            img: "images/thumbs/IMG_20260505_162529.jpg",
+            theme: "disneyGarden"
+        },
+        {
+            date: "2026-05-06",
+            title: "烟花易逝，人情长存",
+            desc: "对我来说，真正的烟花是你眼瞳中的光亮",
+            img: ["images/thumbs/IMG_20260505_213656.jpg","images/firework2.jpg","images/firework3.jpg"],
+            theme: "fireworks"
+        },
+        {
             date: "2026-05-29",
-            title: "花鸟岛 · 第一次正式旅行",
+            title: "让我们前往山海之间",
             desc: "那边太美了，蓝天白云，海风吹着你的草帽。你站在海边，我觉得画面就该停在那里。",
-            img: "images/IMG_20260529_110646.jpg",
+            img: ["images/island1.jpg","images/island2.jpg","images/island3.jpg","images/island4.jpg"],
             theme: "island"
         }
     ],
@@ -300,7 +336,7 @@ const CONFIG = {
             lat: 31.19,
             lng: 121.36,
             icon: "🦁",
-            photos: ["images/IMG_20260328_142819.jpg"]
+            photos: ["images/zoo3.jpg"]
         },
         {
             city: "浦东新区 · 上海海洋水族馆",
@@ -318,7 +354,7 @@ const CONFIG = {
             lat: 31.21,
             lng: 121.47,
             icon: "🏮",
-            photos: ["images/MVIMG_20260411_183512.jpg"]
+            photos: ["images/thumbs/IMG_20260328_211151.jpg"]
         },
         {
             city: "无锡市 · 鼋头渚樱花园",
@@ -376,20 +412,20 @@ const CONFIG = {
     // 她对我的意义
     meaningToMe: [
         {
-            title: "第一次见你时",
-            content: "会议室里你认真回答问题的样子，让我记住了好久。那时候还不知道，这个女孩后来会住进我心里。"
+            title: "你是我的小朋友",
+            content: "是我在辰山植物园不敢牵手的那一个。是我开车时偷偷捏我手臂、轻轻咬一口的那一个。是答辩前焦虑、搬家后觉得孤单、需要我推着轮椅才能走完迪士尼的那一个。在你面前，我可以是大人；但在我面前，你永远可以做孩子。"
         },
         {
-            title: "最让我心动的瞬间",
-            content: "不是某个特定的场景，而是每次你望向我时，眼睛里那种毫无保留的信任。"
+            title: "你是认定我的人",
+            content: "你把我写进论文致谢，那是我这辈子收到过最重的情书。你在迪士尼那晚流着泪说“我就知道我没选错”。你在我被过去的声音纠缠时，不问缘由地站在我身边。被你认定，是我最大的底气。"
         },
         {
-            title: "我最感谢你的三件事",
-            content: `谢谢你愿意坐我的小电驴后座，谢谢你说"我就知道我没选错"，谢谢你让我知道被一个人坚定地选择是什么感觉。`
+            title: "你是与我并肩前行的人",
+            content: "从实习生到产品经理，从校园到职场，从两个人各自为战，到一起规划租房、跳槽和未来。我们是恋人，也是职场上彼此最懂的同行。你懂我的纠结，我也懂你的倔强。我们不是在各自的世界里努力，而是在同一个方向上并肩。"
         },
         {
-            title: "和你在一起之后，我学会了",
-            content: "学会了把一个人放进未来的计划里，学会了细心，也学会了原来爱情真的可以把 everyday 变成 special day。"
+            title: "你是给我家的温度的人",
+            content: "是在大学路的面包店给你买隔天早饭，是在青浦帮你挑那个70平米的小窝，是花鸟岛的灯塔和海浪，是下班后一起散过的步、吃过的宵夜、吐槽过的奇葩室友。遇见你之后我才明白，家不是一个地方，是有你在的那个空间。"
         }
     ],
 
@@ -404,11 +440,11 @@ const CONFIG = {
         // 蜡烛全部熄灭后，简短祝福语（保留原有打字机效果）
         message: "23 岁的你，比星光更温柔，比时间更珍贵。\n谢谢你出现在我的生命里，让我的每一天都有了期待。",
         // 手写信件内容（吹完蜡烛后展开）
-        letter: `亲爱的宝宝：\n\n今天是你的生日，我坐在电脑前想给你写点什么，却发现所有文字都太轻。\n\n我想起迪士尼那晚，你抱着拼图哭着说"我就知道我没选错"，其实我更想告诉你，我也一样。从顾村公园到辰山植物园，从无锡的樱花到花鸟岛的海风，每一次和你出门，我都偷偷觉得幸运。\n\n你总说自己不够完美，但在我眼里，你认真吃饭的样子、打游戏输了皱眉的样子、半夜迷迷糊糊说梦话的样子，全都很好。\n\n新的一岁，愿你继续被这个世界温柔以待。如果生活偶尔不够温柔，那就换我来。\n\n生日快乐，我的女孩。\n\n永远爱你的我`,
+        letter: `亲爱的宝宝：\n\n今天是你的生日，我坐在电脑前想给你写点什么，却发现所有文字都太轻。\n\n我想起迪士尼那晚，你抱着拼图对我说"我就知道我没选错"，其实我更想告诉你，我也一样。从顾村公园到辰山植物园，从无锡的樱花到花鸟岛的海风，每一次和你出门，我都偷偷觉得幸运。\n\n你总说自己不够完美，但在我眼里，你认真吃饭的样子、工作学习累了皱眉的样子、懒懒地躺在床上的样子，全都很好。\n\n新的一岁，愿你继续被这个世界温柔以待。如果生活偶尔不够温柔，那就换我来。\n\n生日快乐，我的女孩。\n\n永远爱你的我`,
         // 信件署名
         letterSignature: "永远爱你的我",
         // 蜡烛全部熄灭后，蛋糕下方显示的文案
-        afterBlowHint: "✨ 愿望已送达星空 ✨"
+        afterBlowHint: "✨ May all the good things come to you✨"
     },
 
     // 那些被记录的里程碑：她已经为我做过的、让我感动的事
@@ -416,21 +452,34 @@ const CONFIG = {
         {
             icon: "🎓",
             title: "毕业论文致谢里，有我的名字",
-            desc: "她把我写进了毕业论文致谢。那段话很长，但我读了很多遍。",
+            desc: "你把我写进了毕业论文致谢。那段话很长，但我读了很多遍。",
             quote: "本论文是在导师赵海燕老师的悉心指导下完成的，本文作者在此谨表示衷心的感谢。\n也感谢我的父母以及朋友，在毕业这一年期间遇到的所有帮助过我的人，每一次的失败都是为了筑起更强的自己。\n最后，要特别感谢我的男朋友。缘分让我们从人海中的陌生人，因相似的三观与契合的性格相识、相知，最终走到彼此身边。你见过我的脆弱，理解我的困境，在每一次抉择的路口，都给出我理性的建议。你的偏爱让我有了对抗世界的底气，你的坚守让我相信，好的爱情是彼此成就、共同成长。山水一程，三生有幸，往后岁月，愿与你携手奔赴更辽阔的远方。",
-            img: "images/IMG_20260425_150600.jpg"
+            img: "images/grauate.jpg"
         },
         {
-            icon: "🧵",
-            title: "她亲手做的礼物",
-            desc: "她花了很多时间，为我做了一件手工。每一个细节里都是心意。",
-            img: null
+            icon: "🌹",
+            title: "幸福是一朵永不凋零的花",
+            desc: "你花了很多时间，为我做了好多手工，写了好多卡片",
+            quote:"你花了很多时间，为我折纸、画画、写卡片。这些看似小小的手工，填满了我生活中所有可能的空隙。如果说程序员的浪漫是写代码，那我的浪漫，就是一遍遍地翻看你留下的这些印记。纸会泛黄，但被你在意过的感觉，永远崭新。",
+            img: "images/flower.jpg"
         },
         {
             icon: "💌",
-            title: "一叠小卡片",
-            desc: "她给我写了很多张小卡片，每一张我都留着。",
-            img: null
+            title: "最初的情书",
+            desc: "我收到的第一份情书，一直在我书桌上最显眼的位置",
+            quote:"你写给我的第一张卡片，我放在书桌上最显眼的位置。后来你又写了很多，每一张我都收着。再后来，你把我的名字写进了毕业论文致谢——那是我这辈子，收到过最重的情书。从一张卡片，到一篇致谢，你一步步，把我写进了你的人生里.",
+            img: "images/lovecard.jpg"
         }
-    ]
+    ],
+
+    // GitHub 仓库与共同维护邀请
+    github: {
+        // 项目仓库地址，留空则不显示"查看仓库"按钮
+        repoUrl: "https://github.com/ErikaWong-win/ErikaWong-win.github.io.git",
+        // commit 信息里显示的名字
+        authorName: "你",
+        coAuthorName: "她",
+        // 自定义 commit 主题
+        commitMessage: "feat: invite you to co-maintain our story"
+    }
 };

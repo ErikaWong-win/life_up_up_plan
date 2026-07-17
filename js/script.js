@@ -256,13 +256,29 @@
         const totalPhotos = photos.length;
 
         // 根据屏幕尺寸计算所需格子数
-        // PC 端使用 200px 基准格子，覆盖约 1.5 倍视口高度，确保铺满面
-        const cellSize = window.innerWidth <= 720 ? 90 : 200;
-        const cols = Math.max(3, Math.ceil(window.innerWidth / cellSize));
-        const rows = Math.max(3, Math.ceil(window.innerHeight / cellSize * 1.5));
-        // PC 端放开上限，避免大屏幕上出现空白；移动端控制数量保证性能
-        const maxCells = window.innerWidth <= 720 ? 48 : 240;
-        const WALL_CELLS = Math.min(cols * rows, maxCells);
+        // 基准桌面 200px / 手机 90px；若照片较多则自动缩小，
+        // 确保所有照片能在首屏可视区域内完整显示，不被截断
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const gap = parseInt(getComputedStyle(photoWall).gap, 10) || 6;
+
+        let cellSize = width <= 720 ? 90 : 200;
+        const minSize = width <= 720 ? 40 : 70;
+
+        function calcCapacity(size) {
+            const cols = Math.max(3, Math.floor((width + gap) / (size + gap)));
+            const rows = Math.max(3, Math.floor((height + gap) / (size + gap)));
+            return { cols, rows, capacity: cols * rows };
+        }
+
+        let { cols, rows, capacity } = calcCapacity(cellSize);
+        while (capacity < totalPhotos && cellSize > minSize) {
+            cellSize -= 5;
+            ({ cols, rows, capacity } = calcCapacity(cellSize));
+        }
+
+        photoWall.style.setProperty("--wall-cell-size", `${cellSize}px`);
+        const WALL_CELLS = Math.max(capacity, totalPhotos);
 
         photoWall.innerHTML = "";
 
@@ -370,13 +386,17 @@
     updateCounter();
 
     // ==================== 时光轴 ====================
-    function renderImages(img) {
+    function renderImages(img, maxCount = 4) {
         if (!img) {
             return `<div class="img-placeholder">🌟</div>`;
         }
 
         if (Array.isArray(img)) {
-            return img.map(src => `
+            const images = img.slice(0, maxCount);
+            if (images.length === 0) {
+                return `<div class="img-placeholder">🌟</div>`;
+            }
+            return images.map(src => `
                 <img src="${src}" alt="回忆" loading="lazy" onerror="this.style.display='none'; this.parentElement.classList.add('fallback')">
             `).join("");
         }
@@ -391,7 +411,7 @@
             timeline.innerHTML = `
                 <ul class="timeline">
                     <li class="timeline-item visible">
-                        <div class="timeline-img"><div class="img-placeholder">📝</div></div>
+                        <div class="timeline-img" data-count="0"><div class="img-placeholder">📝</div></div>
                         <div class="timeline-text">
                             <span class="date">现在</span>
                             <h3>写下你们的第一件小事</h3>
@@ -410,10 +430,11 @@
         sorted.forEach((item) => {
             const themeKey = (item.theme && THEMES[item.theme]) ? item.theme : "sakura";
             const theme = THEMES[themeKey];
+            const imageCount = Array.isArray(item.img) ? Math.min(item.img.length, 4) : (item.img ? 1 : 0);
 
             html += `
                 <li class="timeline-item" data-theme="${themeKey}">
-                    <div class="timeline-img">${renderImages(item.img)}</div>
+                    <div class="timeline-img" data-count="${imageCount}">${renderImages(item.img)}</div>
                     <div class="timeline-text">
                         <span class="theme-badge" data-theme="${themeKey}">${theme.emoji} ${theme.label}</span>
                         <span class="date">${item.date}</span>
@@ -649,76 +670,162 @@
         setInterval(updateCountdown, 1000);
     }
 
-    // ==================== 双面情书打字机 ====================
-    const typewriterTimers = {};
-    const typewriterDone = { front: false, back: false };
-
+    // ==================== 情书手札 ====================
     function initLoveLetter() {
-        const card = document.getElementById("loveLetterCard");
-        const titleFront = document.getElementById("loveLetterTitleFront");
-        const contentFront = document.getElementById("loveLetterContentFront");
-        const titleBack = document.getElementById("loveLetterTitleBack");
-        const contentBack = document.getElementById("loveLetterContentBack");
-        const flipToBack = document.getElementById("flipToBack");
-        const flipToFront = document.getElementById("flipToFront");
-        const replayFront = document.getElementById("replayFront");
-        const replayBack = document.getElementById("replayBack");
+        const wrap = document.getElementById("envelopeWrap");
+        const tabsContainer = document.getElementById("letterTabs");
+        const envelopeTitle = document.getElementById("envelopeTitle");
+        const envelopeMeta = document.getElementById("envelopeMeta");
+        const envelopeSeal = document.getElementById("envelopeSeal");
+        const letterTitle = document.getElementById("letterTitle");
+        const letterTo = document.getElementById("letterTo");
+        const letterDate = document.getElementById("letterDate");
+        const letterContent = document.getElementById("letterContent");
+        const letterSignature = document.getElementById("letterSignature");
+        const openBtn = document.getElementById("openLetterBtn");
+        const closeBtn = document.getElementById("closeLetterBtn");
+        const replayBtn = document.getElementById("replayLetterBtn");
+        const prevBtn = document.getElementById("letterPrev");
+        const nextBtn = document.getElementById("letterNext");
 
-        if (!card || !titleFront || !contentFront) return;
+        if (!wrap || !tabsContainer) return;
 
-        // 兼容旧配置：如果只有 loveLetter，则两面显示同一封
-        const letters = CONFIG.loveLetters || {
-            fromMe: CONFIG.loveLetter || { title: "", content: "" },
-            fromYou: CONFIG.loveLetter || { title: "", content: "" }
-        };
-        const frontLetter = letters.fromMe || { title: "", content: "" };
-        const backLetter = letters.fromYou || { title: "", content: "" };
-
-        titleFront.textContent = frontLetter.title || "";
-        titleBack.textContent = backLetter.title || "";
-
-        function typeText(side, text, el) {
-            if (typewriterTimers[side]) clearInterval(typewriterTimers[side]);
-            el.textContent = "";
-            el.classList.remove("done");
-            typewriterDone[side] = false;
-            let index = 0;
-            typewriterTimers[side] = setInterval(() => {
-                if (index < text.length) {
-                    el.textContent += text.charAt(index);
-                    index++;
-                } else {
-                    clearInterval(typewriterTimers[side]);
-                    el.classList.add("done");
-                    typewriterDone[side] = true;
-                }
-            }, 70);
+        // 兼容旧配置：对象格式 {fromMe, fromYou} 或数组格式
+        let letters = [];
+        if (Array.isArray(CONFIG.loveLetters)) {
+            letters = CONFIG.loveLetters;
+        } else if (CONFIG.loveLetters && typeof CONFIG.loveLetters === "object") {
+            const { fromMe, fromYou } = CONFIG.loveLetters;
+            if (fromMe) letters.push({ ...fromMe, from: fromMe.from || "我", to: fromMe.to || "TA", seal: fromMe.seal || "💌" });
+            if (fromYou) letters.push({ ...fromYou, from: fromYou.from || "TA", to: fromYou.to || "我", seal: fromYou.seal || "💕" });
+        } else if (CONFIG.loveLetter) {
+            letters = [{ ...CONFIG.loveLetter, from: "我", to: "TA", seal: "💌" }];
         }
 
-        function showFace(face) {
-            const isBack = face === "back";
-            card.classList.toggle("flipped", isBack);
+        if (letters.length === 0) return;
 
-            // 翻到背面时，如果背面情书还没打过字，开始打字
-            if (isBack && !typewriterDone.back && backLetter.content) {
-                setTimeout(() => typeText("back", backLetter.content, contentBack), 450);
+        let activeIndex = 0;
+        let isOpen = false;
+        let typeTimer = null;
+        let typingDone = false;
+
+        function renderTabs() {
+            tabsContainer.innerHTML = letters.map((letter, index) => `
+                <button class="letter-tab ${index === activeIndex ? "active" : ""}" data-index="${index}" aria-label="打开${letter.title || "情书"}">
+                    <span>${letter.title || "未命名情书"}</span>
+                    ${letter.date ? `<small> · ${letter.date}</small>` : ""}
+                </button>
+            `).join("");
+        }
+
+        function renderEnvelope() {
+            const letter = letters[activeIndex];
+            envelopeTitle.textContent = letter.title || "";
+            envelopeMeta.textContent = [letter.from, letter.to, letter.date]
+                .filter(Boolean)
+                .join(" · ");
+            envelopeSeal.textContent = letter.seal || "💌";
+        }
+
+        function renderPaper() {
+            const letter = letters[activeIndex];
+            letterTitle.textContent = letter.title || "";
+            letterTo.textContent = letter.to ? `致 ${letter.to}` : "";
+            letterDate.textContent = letter.date || "";
+            letterSignature.textContent = letter.signature || letter.from || "";
+        }
+
+        function typeText(text) {
+            if (typeTimer) clearInterval(typeTimer);
+            letterContent.textContent = "";
+            letterContent.classList.remove("done");
+            typingDone = false;
+
+            if (!text) {
+                typingDone = true;
+                return;
+            }
+
+            let index = 0;
+            typeTimer = setInterval(() => {
+                if (index < text.length) {
+                    letterContent.textContent += text.charAt(index);
+                    index++;
+                } else {
+                    clearInterval(typeTimer);
+                    letterContent.classList.add("done");
+                    typingDone = true;
+                }
+            }, 55);
+        }
+
+        function openLetter() {
+            if (isOpen) return;
+            isOpen = true;
+            wrap.classList.add("opened");
+            openBtn.classList.add("hidden");
+            if (closeBtn) closeBtn.classList.remove("hidden");
+            replayBtn.classList.remove("hidden");
+            renderPaper();
+            // 等信笺展开动画过半后开始打字
+            setTimeout(() => typeText(letters[activeIndex].content || ""), 650);
+        }
+
+        function closeLetter(callback) {
+            if (!isOpen) {
+                if (callback) callback();
+                return;
+            }
+            isOpen = false;
+            wrap.classList.remove("opened");
+            if (typeTimer) clearInterval(typeTimer);
+            letterContent.classList.add("done");
+            openBtn.classList.remove("hidden");
+            if (closeBtn) closeBtn.classList.add("hidden");
+            replayBtn.classList.add("hidden");
+            setTimeout(() => {
+                if (callback) callback();
+            }, 450);
+        }
+
+        function selectLetter(index) {
+            if (index < 0 || index >= letters.length || index === activeIndex) return;
+            activeIndex = index;
+            renderTabs();
+            renderEnvelope();
+
+            if (isOpen) {
+                closeLetter(() => openLetter());
+            } else {
+                renderPaper();
             }
         }
 
-        flipToBack.addEventListener("click", () => showFace("back"));
-        flipToFront.addEventListener("click", () => showFace("front"));
-
-        replayFront.addEventListener("click", () => {
-            if (frontLetter.content) typeText("front", frontLetter.content, contentFront);
-        });
-        replayBack.addEventListener("click", () => {
-            if (backLetter.content) typeText("back", backLetter.content, contentBack);
-        });
-
-        // 首屏翻转动画基本结束后，开始打正面情书
-        if (frontLetter.content) {
-            setTimeout(() => typeText("front", frontLetter.content, contentFront), 1800);
+        function replay() {
+            if (!isOpen) return;
+            typeText(letters[activeIndex].content || "");
         }
+
+        tabsContainer.addEventListener("click", (e) => {
+            const tab = e.target.closest(".letter-tab");
+            if (!tab) return;
+            selectLetter(parseInt(tab.dataset.index, 10));
+        });
+
+        openBtn.addEventListener("click", openLetter);
+        if (closeBtn) closeBtn.addEventListener("click", () => closeLetter());
+        replayBtn.addEventListener("click", replay);
+        prevBtn.addEventListener("click", () => selectLetter((activeIndex - 1 + letters.length) % letters.length));
+        nextBtn.addEventListener("click", () => selectLetter((activeIndex + 1) % letters.length));
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") selectLetter((activeIndex - 1 + letters.length) % letters.length);
+            if (e.key === "ArrowRight") selectLetter((activeIndex + 1) % letters.length);
+        });
+
+        renderTabs();
+        renderEnvelope();
+        renderPaper();
     }
 
     // ==================== 回忆画廊 ====================
@@ -1028,8 +1135,21 @@
             const wrapRect = mapWrap.getBoundingClientRect();
             const nameEl = tooltip.querySelector(".tooltip-name");
             const timeEl = tooltip.querySelector(".tooltip-time");
+            const photosEl = tooltip.querySelector(".tooltip-photos");
             if (nameEl) nameEl.textContent = data.city;
             if (timeEl) timeEl.textContent = `回忆时间：${data.date}`;
+            if (photosEl) {
+                const photos = Array.isArray(data.photos) ? data.photos.slice(0, 3) : [];
+                if (photos.length > 0) {
+                    photosEl.innerHTML = photos.map(src => `
+                        <img src="${src}" alt="${data.city}" loading="lazy" onerror="this.style.display='none'">
+                    `).join("");
+                    photosEl.classList.remove("hidden");
+                } else {
+                    photosEl.innerHTML = "";
+                    photosEl.classList.add("hidden");
+                }
+            }
 
             const left = rect.left - wrapRect.left + rect.width / 2;
             const top = rect.top - wrapRect.top - 8;
@@ -1110,12 +1230,19 @@
             return;
         }
 
-        grid.innerHTML = items.map((item, index) => `
-            <div class="meaning-card" style="transition-delay: ${index * 0.12}s">
-                <h3>${item.title || ""}</h3>
-                <p>${item.content || ""}</p>
-            </div>
-        `).join("");
+        const stickyColors = ["#fff8dc", "#ffe4e1", "#e8f5e9", "#e3f2fd"];
+        const stickyRotations = [-2, 1.5, -1, 2.5];
+
+        grid.innerHTML = items.map((item, index) => {
+            const color = stickyColors[index % stickyColors.length];
+            const rotate = stickyRotations[index % stickyRotations.length];
+            return `
+                <div class="meaning-card" style="--sticky-color: ${color}; --rotate: ${rotate}deg; transition-delay: ${index * 0.12}s">
+                    <h3>${item.title || ""}</h3>
+                    <p>${item.content || ""}</p>
+                </div>
+            `;
+        }).join("");
 
         const cards = grid.querySelectorAll(".meaning-card");
         const observer = new IntersectionObserver((entries) => {
@@ -1287,11 +1414,8 @@
                     if (typeof window.switchBirthdayMusic === "function") {
                         window.switchBirthdayMusic();
                     }
-                } else {
-                    if (typeof window.switchMainMusic === "function") {
-                        window.switchMainMusic();
-                    }
                 }
+                // 离开生日板块时不切回主音乐，保持生日歌延续到结尾
             });
         }, { threshold: 0.25 });
 
@@ -1531,7 +1655,10 @@
 
         grid.innerHTML = milestones.map((item, index) => `
             <div class="milestone-card" style="transition-delay: ${index * 0.12}s">
-                <div class="milestone-icon">${item.icon || "✨"}</div>
+                <span class="milestone-number">NO.${String(index + 1).padStart(2, "0")}</span>
+                <div class="milestone-seal">
+                    <span class="milestone-icon">${item.icon || "✨"}</span>
+                </div>
                 <h3>${item.title || ""}</h3>
                 ${item.img ? `
                     <div class="milestone-img">
@@ -1711,6 +1838,65 @@
         };
     }
 
+    // ==================== 共同维护邀请 ====================
+    function initInviteSection() {
+        const section = document.getElementById("inviteSection");
+        if (!section) return;
+
+        const github = CONFIG.github || {};
+        const authorEl = document.getElementById("commitAuthor");
+        const coAuthorEl = document.getElementById("commitCoAuthor");
+        const messageEl = document.getElementById("commitMessage");
+        const repoBtn = document.getElementById("inviteRepoBtn");
+        const acceptBtn = document.getElementById("inviteAcceptBtn");
+        const responseEl = document.getElementById("inviteResponse");
+
+        if (authorEl) authorEl.textContent = github.authorName || "你";
+        if (coAuthorEl) coAuthorEl.textContent = github.coAuthorName || "她";
+        if (messageEl) messageEl.textContent = github.commitMessage || "feat: invite you to co-maintain our story";
+
+        if (repoBtn) {
+            if (github.repoUrl) {
+                repoBtn.href = github.repoUrl;
+            } else {
+                repoBtn.style.display = "none";
+            }
+        }
+
+        if (!acceptBtn || !responseEl) return;
+
+        const storageKey = "our_story_invite_accepted";
+        if (localStorage.getItem(storageKey) === "true") {
+            acceptBtn.classList.add("accepted");
+            responseEl.classList.remove("hidden");
+        }
+
+        acceptBtn.addEventListener("click", () => {
+            if (acceptBtn.classList.contains("accepted")) return;
+            acceptBtn.classList.add("accepted");
+            responseEl.classList.remove("hidden");
+            localStorage.setItem(storageKey, "true");
+
+            // 小小的庆祝动画：按钮位置飘出几颗爱心
+            const rect = acceptBtn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const hearts = ["💕", "💖", "💗"];
+            for (let i = 0; i < 6; i++) {
+                const heart = document.createElement("span");
+                heart.className = "click-heart";
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = `${centerX + (Math.random() - 0.5) * 60}px`;
+                heart.style.top = `${centerY + (Math.random() - 0.5) * 20}px`;
+                heart.style.setProperty("--tx", `${(Math.random() - 0.5) * 80}px`);
+                heart.style.setProperty("--rot", `${(Math.random() - 0.5) * 40}deg`);
+                heart.style.fontSize = `${Math.random() * 0.5 + 0.9}rem`;
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 1200);
+            }
+        });
+    }
+
     // ==================== 点击飘爱心 ====================
     function initClickHearts() {
         const hearts = ["💕", "💖"];
@@ -1731,6 +1917,95 @@
         });
     }
 
+    // ==================== 自动滚动开关 ====================
+    function initAutoScroll() {
+        const toggle = document.getElementById("autoScrollToggle");
+        if (!toggle) return;
+
+        let isAutoScrolling = false;
+        let rafId = null;
+        let lastTime = null;
+        let currentSpeed = 80; // 默认滚动速度（像素/秒）
+
+        function updateToggle() {
+            toggle.classList.toggle("active", isAutoScrolling);
+            const icon = toggle.querySelector(".auto-scroll-icon");
+            const text = toggle.querySelector(".auto-scroll-text");
+            if (icon) icon.textContent = isAutoScrolling ? "⏸" : "⏵";
+            if (text) text.textContent = isAutoScrolling ? "滚动中" : "自动滚动";
+        }
+
+        function stop() {
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = null;
+            lastTime = null;
+            isAutoScrolling = false;
+            updateToggle();
+        }
+
+        function step(timestamp) {
+            if (!isAutoScrolling) return;
+            if (!lastTime) lastTime = timestamp;
+            const delta = timestamp - lastTime;
+            lastTime = timestamp;
+
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            if (window.scrollY >= maxScroll - 2) {
+                stop();
+                return;
+            }
+
+            const newY = window.scrollY + currentSpeed * delta / 1000;
+            window.scrollTo(0, newY);
+            rafId = requestAnimationFrame(step);
+        }
+
+        toggle.addEventListener("click", () => {
+            if (isAutoScrolling) {
+                stop();
+            } else {
+                start();
+            }
+        });
+
+        // 用户手动滚动时自动暂停，避免冲突；添加短暂保护期防止误触
+        let protectUntil = 0;
+        window.addEventListener("wheel", () => {
+            if (!isAutoScrolling || Date.now() < protectUntil) return;
+            stop();
+        }, { passive: true });
+
+        window.addEventListener("touchmove", () => {
+            if (!isAutoScrolling || Date.now() < protectUntil) return;
+            stop();
+        }, { passive: true });
+
+        function start() {
+            if (rafId) cancelAnimationFrame(rafId);
+            isAutoScrolling = true;
+            lastTime = null;
+            protectUntil = Date.now() + 400;
+            updateToggle();
+
+            // 计算到生日祝福板块的速度，按 3 分钟（180 秒）均摊，确保 4 分钟内到达且速度更快
+            const birthdaySection = document.getElementById("birthdaySection");
+            if (birthdaySection) {
+                const targetY = birthdaySection.offsetTop;
+                const currentY = window.scrollY;
+                const distance = Math.max(0, targetY - currentY);
+                if (distance > 0) {
+                    currentSpeed = distance / 180;
+                } else {
+                    currentSpeed = 100;
+                }
+            } else {
+                currentSpeed = 100;
+            }
+
+            rafId = requestAnimationFrame(step);
+        }
+    }
+
     // ==================== 初始化 ====================
     initStarfield();
     renderWall();
@@ -1748,5 +2023,7 @@
     initFireworks();
     initMilestones();
     initMusicPlayer();
+    initInviteSection();
     initClickHearts();
+    initAutoScroll();
 })();
